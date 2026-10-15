@@ -1,0 +1,212 @@
+{
+  "schema_version": 2,
+  "version": "2.1.0",
+  "tools": [
+    {
+      "id": "git",
+      "binary": "git",
+      "minimum": "2.30",
+      "category": "core",
+      "mac_brew": "git",
+      "linux_apt": "git",
+      "linux_dnf": "git",
+      "install": "host-manual"
+    },
+    {
+      "id": "python",
+      "binary": "python3",
+      "minimum": "3.11",
+      "category": "core",
+      "mac_brew": "python@3.13",
+      "linux_apt": "python3",
+      "linux_dnf": "python3",
+      "install": "host-manual"
+    },
+    {
+      "id": "node",
+      "binary": "node",
+      "minimum": "20",
+      "category": "core",
+      "mac_brew": "node",
+      "linux_apt": "nodejs",
+      "linux_dnf": "nodejs",
+      "install": "host-manual"
+    },
+    {
+      "id": "npm",
+      "binary": "npm",
+      "category": "core",
+      "mac_brew": "node",
+      "linux_apt": "npm",
+      "linux_dnf": "npm",
+      "install": "host-manual"
+    },
+    {
+      "id": "npx",
+      "binary": "npx",
+      "category": "core",
+      "mac_brew": "node",
+      "linux_apt": "npm",
+      "linux_dnf": "npm",
+      "install": "host-manual"
+    },
+    {
+      "id": "codex",
+      "binary": "codex",
+      "category": "core",
+      "install": "host-manual"
+    },
+    {
+      "id": "docker",
+      "binary": "docker",
+      "category": "runtime",
+      "mac_brew": null,
+      "linux_apt": "docker.io",
+      "linux_dnf": "moby-engine",
+      "mac_cask": "orbstack",
+      "install": "host-manual"
+    },
+    {
+      "id": "uv",
+      "binary": "uv",
+      "category": "recommended",
+      "mac_brew": "uv",
+      "linux_apt": null,
+      "linux_dnf": null,
+      "install": "local-python",
+      "package": "uv"
+    },
+    {
+      "id": "playwright-cli",
+      "binary": "playwright-cli",
+      "category": "recommended",
+      "install": "local-npm",
+      "package": "@playwright/cli"
+    },
+    {
+      "id": "gh",
+      "binary": "gh",
+      "category": "optional",
+      "mac_brew": "gh",
+      "linux_apt": "gh",
+      "linux_dnf": "gh",
+      "install": "host-manual"
+    },
+    {
+      "id": "ruff",
+      "binary": "ruff",
+      "category": "recommended",
+      "mac_brew": "ruff",
+      "install": "local-python",
+      "package": "ruff"
+    },
+    {
+      "id": "skills-cli",
+      "binary": "skills",
+      "install": "local-npm",
+      "package": "skills",
+      "category": "internal"
+    },
+    {
+      "id": "impeccable-cli",
+      "binary": "impeccable",
+      "install": "local-npm",
+      "package": "impeccable",
+      "category": "internal"
+    },
+    {
+      "id": "rich",
+      "binary": "rich",
+      "install": "bundled-python-lib",
+      "category": "internal",
+      "note": "Bundled with installer; already available without network or global installation"
+    }
+  ],
+  "skills": [
+    {
+      "name": "frontend-design",
+      "source": "anthropics/skills",
+      "profile": "web"
+    },
+    {
+      "name": "vercel-react-best-practices",
+      "source": "vercel-labs/agent-skills",
+      "profile": "web"
+    },
+    {
+      "name": "vercel-composition-patterns",
+      "source": "vercel-labs/agent-skills",
+      "profile": "web"
+    },
+    {
+      "name": "web-design-guidelines",
+      "source": "vercel-labs/agent-skills",
+      "profile": "web"
+    },
+    {
+      "name": "shadcn",
+      "source": "shadcn/ui",
+      "profile": "web"
+    },
+    {
+      "name": "fastapi",
+      "source": "fastapi/fastapi",
+      "profile": "python"
+    },
+    {
+      "name": "systematic-debugging",
+      "source": "obra/superpowers",
+      "profile": "core"
+    },
+    {
+      "name": "verification-before-completion",
+      "source": "obra/superpowers",
+      "profile": "core"
+    },
+    {
+      "name": "differential-review",
+      "source": "trailofbits/skills",
+      "profile": "security"
+    },
+    {
+      "name": "impeccable",
+      "source": "pbakaus/impeccable",
+      "profile": "web",
+      "installer": "impeccable"
+    },
+    {
+      "name": "playwright-cli",
+      "source": "microsoft/playwright-cli",
+      "profile": "qa",
+      "installer": "playwright-cli"
+    },
+    {
+      "name": "ponytail",
+      "source": "DietrichGebert/ponytail",
+      "profile": "core",
+      "installer": "skills-cli"
+    }
+  ],
+  "plugins": [
+    {
+      "name": "ponytail",
+      "mode": "project-skill",
+      "required": true,
+      "note": "No globally installed plugin or global lifecycle hooks; AGENTS.md instructs all coding agents to load local skill."
+    }
+  ],
+  "mcp": [
+    {
+      "name": "openaiDeveloperDocs",
+      "url": "https://developers.openai.com/mcp",
+      "required": true,
+      "scope": "project"
+    },
+    {
+      "name": "context7",
+      "url": "https://mcp.context7.com/mcp",
+      "required": false,
+      "scope": "project"
+    }
+  ]
+}

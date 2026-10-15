@@ -1,0 +1,71 @@
+# Secrets / local auth / generated state
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.kdbx
+.secrets/
+credentials.json
+service-account*.json
+*.sqlite3
+*.db
+# Python, JS, caches and builds
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+node_modules/
+.next/
+dist/
+build/
+coverage/
+playwright-report/
+test-results/
+.playwright-cli/
+# Local state not necessary to version
+.DS_Store
+.idea/
+.vscode/
+*.log
+.tmp/
+.cache/
+artifacts/
+# Keep projects' high-level state and evidence manifest in git, not binary evidence.
+
+# Exelia Full Installer v2 — machine-specific local traces, never commit
+.exelia-install/
+
+# Private, PROJECT-LOCAL installer dependencies; never commit tool binaries
+.exelia-tools/
+
+# Exelia 2.1 machine-local worktrees, generated prompts, browser traces and telemetry
+.exelia/
+# Local browser runtime/cache always stays in the repository, never under ~/.cache
+
+# Downloaded third-party skills are reinstalled per clone, not redistributed by this template.
+# Bundled original Exelia skills remain tracked; verify upstream rights before vendoring others.
+/.agents/skills/frontend-design/
+/.agents/skills/vercel-react-best-practices/
+/.agents/skills/vercel-composition-patterns/
+/.agents/skills/web-design-guidelines/
+/.agents/skills/shadcn/
+/.agents/skills/fastapi/
+/.agents/skills/systematic-debugging/
+/.agents/skills/verification-before-completion/
+/.agents/skills/differential-review/
+/.agents/skills/impeccable/
+/.agents/skills/playwright-cli/
+/.agents/skills/ponytail/
+# VS Code workspace recommendations may be shared, user settings remain private.
+!/.vscode/
+/.vscode/*
+!/.vscode/extensions.json

@@ -1,0 +1,10 @@
+# EXAMPLE ONLY — copy vetted sections to trusted project .codex/config.toml if needed.
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+
+# Context7 typically requires authentication; prefer its official plugin OAuth flow.
+# [mcp_servers.context7]
+# url = "https://mcp.context7.com/mcp"
+# Set authentication in a credential store / user-level settings; NEVER commit literal keys.
+
+# GitHub MCP and Sentry MCP: enabled only if product/CI requires them.

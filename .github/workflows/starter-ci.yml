@@ -1,0 +1,34 @@
+name: Exelia starter integrity
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Shell syntax
+        run: bash -n install.sh scripts/*.sh
+      - name: Starter structural audit
+        run: python3 scripts/validate-starter.py
+      - name: Unit tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Offline fresh-install simulation
+        run: python3 tests/integration_smoke.py
+      - name: Public repository hygiene
+        run: python3 scripts/check-publication.py
+      - name: Git whitespace audit
+        run: git diff --check HEAD~1 HEAD || test "$(git rev-list --count HEAD)" -eq 1
+# Replace action version tags with reviewed commit SHAs for hardened public workflows.

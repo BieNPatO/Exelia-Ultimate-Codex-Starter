@@ -1,0 +1,7 @@
+# Configured after tech-stack selection and doc approval. Commands are executed by bash.
+# IMPORTANT: The --app quality gate FAILS until at least one real runnable test is entered below.
+# Examples, replace with actual paths and working commands:
+# uv run ruff check backend && uv run pytest -q backend/tests
+# npm --prefix frontend run lint && npm --prefix frontend run typecheck
+# npm --prefix frontend run test && npm --prefix frontend run build
+# npx playwright test

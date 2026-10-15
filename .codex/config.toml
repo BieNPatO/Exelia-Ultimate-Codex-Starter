@@ -1,0 +1,27 @@
+# Trusted project config. Do not bypass the workspace sandbox.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+# Codex network stays off unless a specific reviewed project task requires a bounded exception.
+# Local installer is run by the user separately after reviewing its plan.
+network_access = false
+
+[features]
+multi_agent = true
+hooks = true
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 4
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+
+# Context7 is activated through the authenticated official setup/plugin flow.
+# Never hard-code API keys into tracked TOML files.
+
+# Project-scoped, remote Context7 MCP. Optional login is handled inside Codex.
+# No user-level configuration or plaintext credentials are modified.
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "phase": "discovery",
+  "documentation_approved": false,
+  "approval_evidence": null,
+  "approval_at": null,
+  "current_stage": null,
+  "current_task_id": null,
+  "last_verified_commit": null,
+  "last_quality_gate": "NOT_RUN",
+  "blockers": [],
+  "updated_at": null
+}

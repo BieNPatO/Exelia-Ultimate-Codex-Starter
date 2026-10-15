@@ -1,0 +1,22 @@
+starter:
+  name: exelia-ultimate-codex-starter
+  version: 2.1.0
+  environment: auto_detect_macos_linux_wsl2
+  primary_target: macos_orbstack
+  architecture: flexible
+  default_frontend: react_nextjs
+  default_backend: python_fastapi
+  default_conversation_language: ask_on_first_launch
+  developer_artifacts_language: en
+  application_ui_languages: decide_during_discovery
+  implementation_requires_one_time_document_approval: true
+  automatic_local_git_checkpoints: true
+  git_push: manual_only
+  ponytail: project_local_skill_full_policy_no_global_plugin_hooks
+  additional_token_optimizers: disabled
+  qa_gate_before_commit: true
+  allow_host_full_access: false
+  network_integrations: explicit_plan_and_confirmation
+  installer: python_v2_bundled_rich_from_first_frame_local_tools
+  automation: approved_project_capabilities_worktrees_qa_browser_evals
+  github_usage: use_template_for_new_projects

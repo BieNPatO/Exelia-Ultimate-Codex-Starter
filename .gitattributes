@@ -1,0 +1,10 @@
+* text=auto
+*.sh text eol=lf
+*.py text eol=lf
+# Preserve upstream Vercel SKILL formatting (Markdown trailing spaces may mean line breaks).
+# Application and original starter code retain normal whitespace checks.
+.agents/skills/vercel-composition-patterns/** whitespace=-blank-at-eol
+.agents/skills/vercel-react-best-practices/** whitespace=-blank-at-eol
+
+# Bundled third-party Rich UI source: preserve upstream formatting; validate own code normally.
+installer/_vendor/** whitespace=-blank-at-eol,-blank-at-eof

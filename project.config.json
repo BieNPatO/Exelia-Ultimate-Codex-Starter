@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "project_name": null,
+  "conversation_language": null,
+  "application_ui_languages": [],
+  "stack": {
+    "frontend": null,
+    "backend": null,
+    "database": null
+  },
+  "development_artifacts_language": "en",
+  "environment": "macos-orbstack",
+  "git": {
+    "auto_local_checkpoints": true,
+    "remote_push": false
+  },
+  "ponytail": {
+    "required": true,
+    "mode": "project_skill_full_guidance"
+  },
+  "model_policy": {
+    "routing": "recommend_and_configure_if_verified"
+  },
+  "capabilities": {
+    "visual_qa": false,
+    "security_review": false
+  }
+}

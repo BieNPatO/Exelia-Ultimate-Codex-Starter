@@ -1,0 +1,19 @@
+{
+  "description": "Small trusted project hooks (review with /hooks). Do not rely on hooks as security boundary.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/session_start.py\"",
+            "timeout": 5,
+            "additionalContextLimit": 1200,
+            "statusMessage": "Loading project state"
+          }
+        ]
+      }
+    ]
+  }
+}
