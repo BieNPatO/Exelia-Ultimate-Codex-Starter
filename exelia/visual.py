@@ -20,7 +20,7 @@ export default defineConfig({
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['iPhone 13'] } },
+    { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
 });
 '''
@@ -73,7 +73,7 @@ def setup(root: Path = ROOT, *, overwrite=False):
 def run(root: Path = ROOT):
     approved(root)
     status = inspect(root)
-    if not status['eligible'] or not status['package_installed'] or not status['smoke_exists']:
+    if not status['eligible'] or not status['package_installed'] or not status['smoke_exists'] or not status['config_exists']:
         raise RuntimeError('E2E not ready: run visual plan/setup and install project-local @playwright/test explicitly.')
     binary = root / 'app/node_modules/.bin/playwright'
     if not binary.exists():

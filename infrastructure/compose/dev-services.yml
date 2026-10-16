@@ -1,12 +1,13 @@
-# Optional development-only service profiles. No service starts implicitly.
+# Optional development profiles only. Supply reviewed image digests; no implicit startup.
+# Run with an explicit --env-file infrastructure/.env; never use for production.
 services:
   postgres:
-    image: postgres:17-alpine
+    image: "postgres@sha256:${POSTGRES_DIGEST:?Set a reviewed postgres alpine image digest}"
     profiles: ["db"]
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app_dev}
       POSTGRES_USER: ${POSTGRES_USER:-app_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_only_change_me}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a development-only password}
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-55432}:5432"
     volumes:
@@ -16,32 +17,57 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+    security_opt: ["no-new-privileges:true"]
+    restart: "no"
   redis:
-    image: redis:7-alpine
+    image: "redis@sha256:${REDIS_DIGEST:?Set a reviewed redis alpine image digest}"
     profiles: ["cache"]
     command: ["redis-server", "--save", "", "--appendonly", "no"]
     ports:
       - "127.0.0.1:${REDIS_PORT:-56379}:6379"
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 64
+    security_opt: ["no-new-privileges:true"]
+    restart: "no"
   mailpit:
-    image: axllent/mailpit:latest
+    image: "axllent/mailpit@sha256:${MAILPIT_DIGEST:?Set a reviewed mailpit image digest}"
     profiles: ["mail"]
     ports:
       - "127.0.0.1:${MAILPIT_SMTP_PORT:-51025}:1025"
       - "127.0.0.1:${MAILPIT_UI_PORT:-58025}:8025"
+    # Use the image's built-in healthcheck; verify it for the selected digest.
+    mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 64
+    security_opt: ["no-new-privileges:true"]
+    restart: "no"
   minio:
-    image: minio/minio:latest
+    image: "minio/minio@sha256:${MINIO_DIGEST:?Set a reviewed minio image digest}"
     profiles: ["object"]
     command: server /data --console-address ':9001'
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-devminio}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-dev_password_change_me}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-app_dev_user}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set a development-only password}
     ports:
       - "127.0.0.1:${MINIO_PORT:-59000}:9000"
       - "127.0.0.1:${MINIO_CONSOLE_PORT:-59001}:9001"
     volumes:
       - object_dev_data:/data
+    # Selected image must provide a working built-in healthcheck and writable /data.
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+    security_opt: ["no-new-privileges:true"]
+    restart: "no"
 volumes:
   pg_dev_data:
   object_dev_data:

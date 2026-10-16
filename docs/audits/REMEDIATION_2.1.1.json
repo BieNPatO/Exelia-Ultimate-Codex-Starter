@@ -1,0 +1,841 @@
+{
+  "schema_version": 1,
+  "release": "2.1.1",
+  "release_type": "Stability & Security Release Candidate",
+  "audit_date": "2026-10-16",
+  "baseline_revision": "2d78cd0130123187e9dc6766a602049f9235e549",
+  "source_revision": "See external release manifest for final commit; this in-source audit precedes its own commit.",
+  "readiness": "SOURCE_VERIFIED_AWAITING_FINAL_ARCHIVE_VERIFICATION",
+  "original_audit": {
+    "findings": 16,
+    "high": 2,
+    "medium": 11,
+    "low": 3,
+    "original_report": "Original installation-local audit retained outside distribution; no environment data copied."
+  },
+  "findings": [
+    {
+      "id": "F01",
+      "status": "FIXED",
+      "changed_files": "exelia/worktrees.py",
+      "root_cause": "Scope aliases were compared as raw strings; integration trusted branch-controlled paths and rename destinations.",
+      "changes": "Canonical ownership frozen at prepare; traversal/escape and rebinding rejected; every rename endpoint checked; lexical paths and resolved symlink targets both checked; exact reviewed checkout bound through QA.",
+      "regression": "test_remediation_backend.py, test_remediation_qa.py",
+      "residual_risk": "Case aliases are conservatively serialized; worktrees are not process sandboxes."
+    },
+    {
+      "id": "F02",
+      "status": "FIXED",
+      "changed_files": "exelia/__main__.py, exelia/visual.py",
+      "root_cause": "CLI always returned zero after runner result.",
+      "changes": "Propagate runner exit/signal; missing configuration and runner fail; keyboard interruption returns 130.",
+      "regression": "test_remediation_visual.py",
+      "residual_risk": "Runner output remains diagnostic; smoke coverage is limited."
+    },
+    {
+      "id": "F03",
+      "status": "FIXED",
+      "changed_files": "scripts/git-checkpoint.sh, scripts/checkpoint.py, installer/engine.py",
+      "root_cause": "Unconditional broad staging captured unrelated work.",
+      "changes": "Exact files, explicitly reviewed index or initial source inventory; bind index and HEAD across QA; credential checks shared.",
+      "regression": "test_remediation_devops.py, integration_smoke.py",
+      "residual_risk": "Prepared index selection is a human/coordinator assertion; failed gate mutations remain for inspection."
+    },
+    {
+      "id": "F04",
+      "status": "FIXED",
+      "changed_files": "exelia/capabilities.py",
+      "root_cause": "Audit iterated only old selected entries and lost optional selectors.",
+      "changes": "Retain selectors; compare complete selected name sets, missing content, hashes, stack and recorded sources/revisions.",
+      "regression": "test_remediation_backend.py",
+      "residual_risk": "Registry metadata and hashes do not authenticate suppliers."
+    },
+    {
+      "id": "F05",
+      "status": "FIXED",
+      "changed_files": "tests/integration_smoke.py",
+      "root_cause": "Copied downloaded skills without their runtimes made installed fixtures falsely appear ready.",
+      "changes": "Exclude runtime and external skills; create isolated deterministic installer fixtures and source inventory.",
+      "regression": "integration_smoke.py",
+      "residual_risk": "Offline lifecycle simulation mocks external downloads; real bounded dependency checks are separate."
+    },
+    {
+      "id": "F06",
+      "status": "FIXED",
+      "changed_files": "tests/test_starter.py, tests/test_exelia_automation.py, tests/test_post_discovery.py",
+      "root_cause": "Pre-discovery expectations read mutable destination configuration.",
+      "changes": "Move state-dependent checks into fixtures; exercise core, React, Python, combined and security configurations.",
+      "regression": "test_post_discovery.py, test_starter.py",
+      "residual_risk": "Representative stacks; no claim every framework/version is tested."
+    },
+    {
+      "id": "F07",
+      "status": "FIXED",
+      "changed_files": "exelia/dispatch.py",
+      "root_cause": "Empty prepare accessed absent packets key.",
+      "changes": "Return zero packets/prepared tasks without creating runtime files.",
+      "regression": "test_remediation_backend.py, test_remediation_qa.py",
+      "residual_risk": "Prepare still requires product documentation approval."
+    },
+    {
+      "id": "F08",
+      "status": "FIXED",
+      "changed_files": "exelia/visual.py, docs/automation/QUALITY.md",
+      "root_cause": "iPhone descriptor required WebKit but instructions installed Chromium.",
+      "changes": "Use Pixel 7 Chromium with Desktop Chrome and local browser cache.",
+      "regression": "test_remediation_visual.py; isolated real desktop/mobile smoke",
+      "residual_risk": "Synthetic application smoke does not validate a future product."
+    },
+    {
+      "id": "F09",
+      "status": "FIXED",
+      "changed_files": "exelia/security.py, installer/engine.py",
+      "root_cause": "Single-value regex leaked quoted, bearer and multiline output.",
+      "changes": "Discard authentication-bearing subprocess output; recognize flags/credential URIs; atomic 0600 logs and 0700 directory.",
+      "regression": "test_remediation_security.py",
+      "residual_risk": "Unknown/obfuscated credentials cannot be ruled out; authentication diagnostics are intentionally suppressed."
+    },
+    {
+      "id": "F10",
+      "status": "FIXED",
+      "changed_files": "exelia/security.py, exelia/worktrees.py, scripts/checkpoint.py, scripts/check-publication.py",
+      "root_cause": "Root-specific filename comparisons missed nested credentials.",
+      "changes": "Shared basename/component policy at any depth, with explicit non-secret example suffixes.",
+      "regression": "test_remediation_security.py, test_remediation_backend.py, test_remediation_devops.py",
+      "residual_risk": "Example suffix exemption is filename-only; content remains scanned."
+    },
+    {
+      "id": "F11",
+      "status": "FIXED",
+      "changed_files": "scripts/task-ledger.py, exelia/worktrees.py",
+      "root_cause": "Ready status stood in for review and QA could cover another commit/tree.",
+      "changes": "Record reviewer/result/exact commit/time/evidence/findings; reject stale/nonindependent review; bind checkout and require integrated reviewed commit before completion QA.",
+      "regression": "test_remediation_backend.py, test_remediation_qa.py",
+      "residual_risk": "Reviewer identity and evidence are procedural attestations, not authenticated proof."
+    },
+    {
+      "id": "F12",
+      "status": "PARTIAL",
+      "changed_files": "manifests/components.json, manifests/tool-dependencies/, manifests/dependency-provenance.json, installer/localtools.py, installer/engine.py",
+      "root_cause": "Bare package names and mutable repository sources allowed silent upstream drift.",
+      "changes": "Exact npm versions and integrity locks via npm ci; Python release hashes; immutable skill source references; writable runtime paths and executables confined to project; isolated package-manager routing; provenance/update policy.",
+      "regression": "test_remediation_devops.py; bounded real dependency install checks",
+      "residual_risk": "Full supplier code/advisory/legal audit and all-platform/optional installs are not complete; installed tool binaries are not version-attested automatically; generator repository HEAD is not package-build attestation."
+    },
+    {
+      "id": "F13",
+      "status": "FIXED",
+      "changed_files": "scripts/check-publication.py, exelia/security.py",
+      "root_cause": "Narrow patterns skipped token families/history and deduplicated historical pathnames.",
+      "changes": "Scan tracked/export content and every historical tree pathname plus reachable blobs; reject runtime/downloaded skills; dedicated Gitleaks run separately.",
+      "regression": "test_remediation_security.py; publication and Gitleaks checks",
+      "residual_risk": "Heuristic scans cover reachable local history only and cannot certify absence of secrets."
+    },
+    {
+      "id": "F14",
+      "status": "FIXED",
+      "changed_files": "scripts/task-ledger.py",
+      "root_cause": "Blocked tasks had no supported outgoing recovery transition.",
+      "changes": "Explicit evidence-bearing blocked-to-todo resume preserves history and clears stale review.",
+      "regression": "test_remediation_backend.py",
+      "residual_risk": "Dependencies remain required before start."
+    },
+    {
+      "id": "F15",
+      "status": "FIXED",
+      "changed_files": "scripts/project-state.py",
+      "root_cause": "Locale regex only accepted basic language and uppercase region.",
+      "changes": "Document and validate common BCP47 language/script/region/variant subset; conversation language separate.",
+      "regression": "test_remediation_backend.py",
+      "residual_risk": "Extensions, private-use and full registry canonicalization are deliberately unsupported."
+    },
+    {
+      "id": "F16",
+      "status": "PARTIAL",
+      "changed_files": "infrastructure/compose/dev-services.yml, .github/workflows/starter-ci.yml",
+      "root_cause": "Actions tags/images latest and known development password defaults were mutable/unsafe.",
+      "changes": "Verified action SHAs; require explicitly reviewed image digest variables and development passwords; localhost ports remain explicit.",
+      "regression": "test_remediation_devops.py; Compose config only",
+      "residual_risk": "Image digests/compatibility must be selected and verified by project; no service was started; hosted Actions/OS matrix untested."
+    }
+  ],
+  "checks": [
+    {
+      "label": "browser-live-escalated",
+      "command": [
+        "python3",
+        "-m",
+        "exelia",
+        "visual",
+        "run"
+      ],
+      "exit_code": 0,
+      "seconds": 1.135,
+      "timestamp": "2026-10-15T20:07:34.978948+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "browser-live",
+      "command": [
+        "python3",
+        "-m",
+        "exelia",
+        "visual",
+        "run"
+      ],
+      "exit_code": 1,
+      "seconds": 2.24,
+      "timestamp": "2026-10-15T20:07:20.741299+00:00",
+      "outcome": "FAIL"
+    },
+    {
+      "label": "clean-source-gate",
+      "command": [
+        "bash",
+        "scripts/quality-gate.sh",
+        "--starter"
+      ],
+      "exit_code": 0,
+      "seconds": 14.56,
+      "timestamp": "2026-10-15T20:15:32.568665+00:00",
+      "outcome": "PASS",
+      "test_methods": 96
+    },
+    {
+      "label": "clean-source-gitleaks",
+      "command": [
+        "gitleaks",
+        "dir",
+        "--redact",
+        "--no-banner",
+        "--report-format",
+        "json",
+        "--report-path",
+        "<temporary-report>",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 0.871,
+      "timestamp": "2026-10-15T20:15:18.880519+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "clean-source-integration",
+      "command": [
+        "python3",
+        "tests/integration_smoke.py"
+      ],
+      "exit_code": 0,
+      "seconds": 23.246,
+      "timestamp": "2026-10-15T20:15:41.255144+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "clean-source-publication",
+      "command": [
+        "python3",
+        "scripts/check-publication.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.794,
+      "timestamp": "2026-10-15T20:15:18.803019+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "F05-installed-baseline-reproduction",
+      "command": [
+        "python3",
+        "tests/integration_smoke.py"
+      ],
+      "exit_code": 1,
+      "outcome": "FAIL"
+    },
+    {
+      "label": "final-installed-integration",
+      "command": [
+        "python3",
+        "tests/integration_smoke.py"
+      ],
+      "exit_code": 0,
+      "seconds": 24.998,
+      "timestamp": "2026-10-15T20:15:16.710056+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "final-publication-working",
+      "command": [
+        "python3",
+        "scripts/check-publication.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.843,
+      "timestamp": "2026-10-15T20:14:52.555106+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "final-starter-gate",
+      "command": [
+        "bash",
+        "scripts/quality-gate.sh",
+        "--starter"
+      ],
+      "exit_code": 0,
+      "seconds": 15.455,
+      "timestamp": "2026-10-15T20:15:07.166642+00:00",
+      "outcome": "PASS",
+      "test_methods": 96
+    },
+    {
+      "label": "installed-smoke-before",
+      "command": [
+        "python3",
+        "tests/integration_smoke.py"
+      ],
+      "exit_code": 1,
+      "seconds": 17.736,
+      "timestamp": "2026-10-15T20:08:51.129819+00:00",
+      "outcome": "FAIL"
+    },
+    {
+      "label": "installer-recovery",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_installer_recovery.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 0.135,
+      "timestamp": "2026-10-15T20:17:15.806972+00:00",
+      "outcome": "PASS",
+      "test_methods": 3
+    },
+    {
+      "command": "python3 -m unittest discover -s tests -p test_exelia_automation.py -v",
+      "exit_code": 1,
+      "outcome": "FAIL"
+    },
+    {
+      "label": "publication-current",
+      "command": [
+        "python3",
+        "scripts/check-publication.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.776,
+      "timestamp": "2026-10-15T20:09:19.202870+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "qa-final",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_remediation_qa.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 0.526,
+      "timestamp": "2026-10-15T20:07:54.878849+00:00",
+      "outcome": "PASS",
+      "test_methods": 3
+    },
+    {
+      "label": "rc-clean-gate",
+      "command": [
+        "bash",
+        "scripts/quality-gate.sh",
+        "--starter"
+      ],
+      "exit_code": 0,
+      "seconds": 17.456,
+      "timestamp": "2026-10-16T05:45:48.705549+00:00",
+      "outcome": "PASS",
+      "test_methods": 111
+    },
+    {
+      "label": "rc-clean-gitleaks",
+      "command": [
+        "gitleaks",
+        "dir",
+        "--redact",
+        "--no-banner",
+        "--report-format",
+        "json",
+        "--report-path",
+        "<temporary-report>",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 0.914,
+      "timestamp": "2026-10-16T05:45:32.165040+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "rc-clean-integration",
+      "command": [
+        "python3",
+        "tests/integration_smoke.py"
+      ],
+      "exit_code": 0,
+      "seconds": 26.129,
+      "timestamp": "2026-10-16T05:45:57.378400+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "rc-clean-publication",
+      "command": [
+        "python3",
+        "scripts/check-publication.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.572,
+      "timestamp": "2026-10-16T05:45:31.822434+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "rc-installed-integration",
+      "command": [
+        "python3",
+        "tests/integration_smoke.py"
+      ],
+      "exit_code": 0,
+      "seconds": 27.833,
+      "timestamp": "2026-10-16T05:45:18.490111+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "rc-product-gate",
+      "command": [
+        "bash",
+        "scripts/quality-gate.sh",
+        "--app"
+      ],
+      "exit_code": 1,
+      "seconds": 0.059,
+      "timestamp": "2026-10-16T05:46:42.084100+00:00",
+      "outcome": "BLOCKED",
+      "expected_rejection": true,
+      "detail": "Application documentation/templates intentionally incomplete; no product approval was changed."
+    },
+    {
+      "label": "rc-rich-bootstrap",
+      "command": [
+        "python3",
+        "-S",
+        "-m",
+        "installer",
+        "--plan",
+        "--json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.544,
+      "timestamp": "2026-10-16T05:45:58.965561+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "rc-source-gate",
+      "command": [
+        "bash",
+        "scripts/quality-gate.sh",
+        "--starter"
+      ],
+      "exit_code": 0,
+      "seconds": 18.326,
+      "timestamp": "2026-10-16T05:45:08.980602+00:00",
+      "outcome": "PASS",
+      "test_methods": 111
+    },
+    {
+      "label": "rc-syntax",
+      "command": [
+        "python3",
+        "-c",
+        "from pathlib import Path; import subprocess; files=list(Path('exelia').glob('*.py'))+list(Path('installer').glob('*.py'))+list(Path('scripts').glob('*.py'))+list(Path('tests').glob('*.py')); [compile(p.read_text(),str(p),'exec') for p in files]; scripts=[Path('install.sh'),*Path('scripts').glob('*.sh')]; [subprocess.run(['bash','-n',str(p)],check=True) for p in scripts]; print('PASS:',len(files),'Python sources;',len(scripts),'shell scripts')"
+      ],
+      "exit_code": 0,
+      "seconds": 0.125,
+      "timestamp": "2026-10-16T05:44:50.780324+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "release-final-gate",
+      "command": [
+        "bash",
+        "scripts/quality-gate.sh",
+        "--starter"
+      ],
+      "exit_code": 1,
+      "seconds": 16.558,
+      "timestamp": "2026-10-15T20:20:38.186081+00:00",
+      "outcome": "FAIL",
+      "test_methods": 110
+    },
+    {
+      "label": "starter-gate-regression",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_starter.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 0.866,
+      "timestamp": "2026-10-15T20:10:24.617231+00:00",
+      "outcome": "PASS",
+      "test_methods": 12
+    },
+    {
+      "label": "syntax-final",
+      "command": [
+        "python3",
+        "-c",
+        "from pathlib import Path; import subprocess; files=list(Path('exelia').glob('*.py'))+list(Path('installer').glob('*.py'))+list(Path('scripts').glob('*.py'))+list(Path('tests').glob('*.py')); [compile(p.read_text(),str(p),'exec') for p in files]; scripts=[Path('install.sh'),*Path('scripts').glob('*.sh')]; [subprocess.run(['bash','-n',str(p)],check=True) for p in scripts]; print('PASS:',len(files),'Python sources compiled in memory;',len(scripts),'shell scripts parsed')"
+      ],
+      "exit_code": 0,
+      "seconds": 0.079,
+      "timestamp": "2026-10-15T20:14:01.470801+00:00",
+      "outcome": "PASS"
+    },
+    {
+      "label": "unit-final-candidate",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 12.38,
+      "timestamp": "2026-10-15T20:12:13.047556+00:00",
+      "outcome": "PASS",
+      "test_methods": 94
+    },
+    {
+      "label": "unit-initial",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 1,
+      "seconds": 7.228,
+      "timestamp": "2026-10-15T19:54:56.425216+00:00",
+      "outcome": "FAIL",
+      "test_methods": 69
+    },
+    {
+      "label": "unit-progress",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 10.823,
+      "timestamp": "2026-10-15T20:09:46.223695+00:00",
+      "outcome": "PASS",
+      "test_methods": 88
+    },
+    {
+      "label": "visual-final",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_remediation_visual.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 1.495,
+      "timestamp": "2026-10-15T20:07:54.316216+00:00",
+      "outcome": "PASS",
+      "test_methods": 3
+    }
+  ],
+  "agent_execution": [
+    {
+      "task": "backend_fixes",
+      "role": "backend_engineer",
+      "result": "completed implementation and review remediation"
+    },
+    {
+      "task": "devops_fixes",
+      "role": "devops_engineer",
+      "result": "interrupted by usage limit before edits; recovered by separate agent"
+    },
+    {
+      "task": "devops_recovery",
+      "role": "devops_engineer",
+      "result": "implementation and verified metadata retrieval"
+    },
+    {
+      "task": "security_fixes",
+      "role": "security_auditor",
+      "result": "explicitly assigned implementation; not independent final reviewer"
+    },
+    {
+      "task": "release_docs",
+      "role": "documentation_agent",
+      "result": "completed"
+    },
+    {
+      "task": "qa_verification",
+      "role": "qa_engineer",
+      "result": "independent regressions found two HIGH defects"
+    },
+    {
+      "task": "independent_security",
+      "role": "security_auditor",
+      "result": "completed independent review PASS_WITH_DOCUMENTED_LIMITATIONS; all reproduced findings fixed"
+    },
+    {
+      "task": "independent_code_review",
+      "role": "code_reviewer",
+      "result": "completed independent review PASS_CODE_REVIEW; all reproduced findings fixed"
+    }
+  ],
+  "registered_roles": 12,
+  "all_roles_exercised": false,
+  "model_routing": {
+    "recommendation": "current configured Codex model, high reasoning for implementation/review/security",
+    "actual_switch_verified": false
+  },
+  "safety": {
+    "initial_worktree": "clean",
+    "discovery_approval_changed": false,
+    "global_installations": false,
+    "global_codex_changes": false,
+    "push_or_deploy": false
+  },
+  "release_artifacts": {
+    "status": "PENDING_FINAL_ARCHIVE_IDENTITY",
+    "file_count": 677,
+    "provenance": "This source report is committed before ZIP creation. The companion external AUDIT_REPORT.md and MANIFEST.json record the exact final source commit, ZIP checksum and fresh extracted-ZIP results. Their packaging decision supersedes this pending archive field.",
+    "required_artifact_basenames": [
+      "Exelia-Ultimate-Codex-Starter-v2.1.1.zip",
+      "Exelia-Ultimate-Codex-Starter-v2.1.1.zip.sha256",
+      "Exelia-Ultimate-Codex-Starter-v2.1.1-AUDIT_REPORT.md",
+      "Exelia-Ultimate-Codex-Starter-v2.1.1-MANIFEST.json"
+    ]
+  },
+  "independent_reviews": {
+    "code": {
+      "reviewer": "native-code-reviewer /root/independent_code_review",
+      "outcome": "PASS_CODE_REVIEW",
+      "snapshot_sha256": "e8de17025c164c327d8f49c01f1d33c689007854d9bc0482ffd31f221a16b099",
+      "outstanding_findings": [],
+      "scope": "All final implementation, connected paths and tests; excludes coordinator audit/inventory/state metadata."
+    },
+    "security": {
+      "reviewer": "native Codex security_auditor /root/independent_security",
+      "outcome": "PASS_WITH_DOCUMENTED_LIMITATIONS",
+      "snapshot_sha256": "2b547200de46b29347cc9b9184949c82b5b0ad43833c3f38668b6e915e9fdcce",
+      "scope": "Final source, managed path confinement, redaction, history scanning, dependency metadata and safe failure persistence. No unresolved identified source blocker."
+    }
+  },
+  "source_test_summary": {
+    "test_methods": 111,
+    "passed": 111,
+    "failed": 0,
+    "command": "bash scripts/quality-gate.sh --starter",
+    "installed_integration": "PASS",
+    "clean_export_gate": "PASS: 111/111",
+    "clean_export_integration": "PASS",
+    "post_discovery_matrix": "PASS: core, React, Python, combined, optional security",
+    "live_browser": {
+      "outcome": "PASS",
+      "tests": 2,
+      "passed": 2,
+      "fixture": "Isolated synthetic localhost application; actual Chromium desktop and Pixel 7; Playwright1.64.1",
+      "limitation": "No production or future product acceptance claim."
+    },
+    "repeated_runs": "Counts refer to unique unittest methods per complete run, not a sum of repeated runs or nested fixture test invocations."
+  },
+  "dedicated_secret_scanning": {
+    "tool": "Pre-existing host Gitleaks8.30.1; not installed/modified by this mission",
+    "history": {
+      "command": "gitleaks git --redact --no-banner --report-format json --report-path <temporary-report> .",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "commits": 1,
+      "source": "Baseline reachable history; final release commit is scanned separately during packaging."
+    },
+    "clean_export": {
+      "command": "gitleaks dir --redact --no-banner --report-format json --report-path <temporary-report> .",
+      "exit_code": 0,
+      "outcome": "PASS"
+    },
+    "limit": "No pattern scanner can prove secret absence; unreachable/remote history and supplier legal certification are outside this evidence."
+  },
+  "dependency_checks": [
+    {
+      "command": "python3 -m unittest discover -s tests -p test_remediation_devops.py -v",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "details": ""
+    },
+    {
+      "command": "python3 -m unittest discover -s tests -p test_installer.py -v",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "details": ""
+    },
+    {
+      "command": "python3 tests/integration_smoke.py",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "details": "Offline fake-host installer boundaries, real fixture initial Git checkpoint and resume; source normalized from installed state."
+    },
+    {
+      "command": "bash -n scripts/git-checkpoint.sh",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "details": ""
+    },
+    {
+      "command": "docker compose -f infrastructure/compose/dev-services.yml config --quiet",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "details": "Synthetic all-zero SHA-256 digest variables and synthetic passwords supplied only for config validation; no downloads or starts."
+    },
+    {
+      "command": "npm ci --include=dev --ignore-scripts --no-audit --no-fund",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "details": "Real disposable core dependency installation; 8 packages installed, corrected cwd-based invocation."
+    },
+    {
+      "command": "pip install --disable-pip-version-check --no-input --require-hashes -r requirements-ruff.txt",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "details": "Real disposable virtual environment; official ruff0.17.1 macOS arm64 wheel hash checked."
+    },
+    {
+      "command": "skills add https://github.com/obra/superpowers/tree/bb92a77741419a4ab5f06e711a283343f1ada0c3 --skill systematic-debugging -a codex -y --copy",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "details": "Real disposable project SKILL.md created using pinned commit URL; no private credentials requested."
+    }
+  ],
+  "regression_history": {
+    "backend": {
+      "baseline": {
+        "command": "python3 -m unittest discover -s tests -p test_remediation_backend.py -v",
+        "exit_code": 1,
+        "initial_methods": 11,
+        "failures": 10,
+        "errors": 5
+      },
+      "final_methods": 20,
+      "outcome": "PASS",
+      "followup_reproductions": [
+        "Scope symlink rebinding",
+        "Different QA checkout",
+        "Rename source deletion",
+        "Out-of-scope link",
+        "Completion before integration",
+        "Sequential review metadata deadlock"
+      ]
+    },
+    "security": {
+      "baseline_methods": 4,
+      "exit_code": 1,
+      "failures": 2,
+      "errors": 2,
+      "final_methods": 12,
+      "outcome": "PASS",
+      "followup_reproductions": [
+        "Multiline/CLI/URI output leaks",
+        "Historical shared-blob path omission",
+        "Runtime state redirect",
+        "Rejected local configuration left running"
+      ]
+    },
+    "devops": {
+      "initial_methods": 6,
+      "baseline_exit_code": 1,
+      "failures": 6,
+      "final_methods": 19,
+      "outcome": "PASS",
+      "followup_reproductions": [
+        "Gate mutation of index",
+        "npm prefix lock malformed file references",
+        "Managed prefix/cache symlinks",
+        "Python interpreter alias compatibility",
+        "Hostile pip target configuration"
+      ]
+    },
+    "F05": {
+      "baseline_revision": "2d78cd0130123187e9dc6766a602049f9235e549",
+      "command": "python3 tests/integration_smoke.py",
+      "exit_code": 1,
+      "fixture": "Baseline source plus synthetic already-installed core skill files; expected local skills CLI was absent",
+      "final_outcome": "PASS"
+    },
+    "F06": {
+      "baseline_revision": "2d78cd0130123187e9dc6766a602049f9235e549",
+      "command": "python3 -m unittest discover -s tests -p test_exelia_automation.py -v",
+      "exit_code": 1,
+      "methods": 12,
+      "failures": 1,
+      "fixture": "React selected in clean baseline export",
+      "final_outcome": "PASS"
+    },
+    "F02_F08": {
+      "baseline_exit_code": 1,
+      "methods": 3,
+      "failed_subcases": 7,
+      "final_outcome": "PASS",
+      "evidence": "Actual CLI synthetic runners plus separate real Chromium fixture smoke"
+    }
+  },
+  "platforms": {
+    "host_tested": "macOS arm64, Python3.14; Node26 host; isolated Chromium",
+    "other_platforms": "NOT_TESTED: Linux/Windows/WSL and full version matrix",
+    "application_lint_typecheck_build": "NOT_APPLICABLE: no product stack or application selected; starter gates are structure/unit/integration/syntax/publication",
+    "remote_github": "BLOCKED: no remote created, settings or hosted Actions verified",
+    "containers": "NOT_TESTED runtime; Compose syntax PASS with synthetic digest/password values only; no service started"
+  },
+  "known_limitations": [
+    "No remote exists: GitHub Template settings, branch protection, hosted CI and publication approval remain BLOCKED.",
+    "No product application is selected; product documentation remains intentionally unapproved.",
+    "Live browser smoke uses a synthetic isolated local fixture, not production/product acceptance.",
+    "Third-party source IDs and registry hashes are not supplier security/legal certification.",
+    "No infrastructure was started; image digests and runtime permissions need project-specific validation.",
+    "Linux/Windows/WSL and full supplier vulnerability review NOT_TESTED.",
+    "Managed-path checks do not prevent hostile same-user concurrent filesystem replacement; this is not OS/process isolation.",
+    "Live package download coverage: core npm, one pinned skill and hash-locked Ruff were tested; optional web tooling and every supplier source were not all live-installed.",
+    "The in-source audit precedes its own commit/archive; exact finished-artifact identity and post-extraction decision are external companion artifacts."
+  ]
+}

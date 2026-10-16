@@ -17,7 +17,7 @@ def main(argv=None):
  p=argparse.ArgumentParser()
  sub=p.add_subparsers(dest='action',required=True)
  a=sub.add_parser('language');a.add_argument('code',choices=['pl','en'])
- a=sub.add_parser('ui-language');a.add_argument('locales',help='Comma-separated BCP47 language tags, e.g. en,pl')
+ a=sub.add_parser('ui-language');a.add_argument('locales',help='Comma-separated language[-Script][-REGION][-variant] tags, e.g. en,pl,zh-Hant,es-419; extensions/private-use unsupported')
  a=sub.add_parser('approve');a.add_argument('--evidence',required=True,help='Exact human approval text from chat; do not fabricate')
  a=sub.add_parser('stage');a.add_argument('name')
  a=sub.add_parser('qa');a.add_argument('status',choices=['PASS','FAIL','BLOCKED','NOT_RUN'])
@@ -28,7 +28,8 @@ def main(argv=None):
  elif args.action=='ui-language':
   import re
   locales=[i.strip() for i in args.locales.split(',') if i.strip()]
-  if not locales or any(not re.fullmatch(r'[a-z]{2,3}(?:-[A-Z]{2})?',i) for i in locales):p.error('Invalid locale list')
+  pattern = r'[a-z]{2,3}(?:-[A-Z][a-z]{3})?(?:-(?:[A-Z]{2}|[0-9]{3}))?(?:-(?:[a-zA-Z0-9]{5,8}|[0-9][a-zA-Z0-9]{3}))*'
+  if not locales or any(not re.fullmatch(pattern,i) for i in locales):p.error('Invalid locale list: use language[-Script][-REGION][-variant]; extensions/private-use unsupported')
   config=load(CONFIG);config['application_ui_languages']=locales;save(CONFIG,config);print('App UI locale(s) recorded separately from conversation language.')
  elif args.action=='approve':
   if len(args.evidence.strip())<3: p.error('Real human approval evidence must be recorded')

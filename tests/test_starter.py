@@ -33,13 +33,50 @@ class StarterTests(unittest.TestCase):
         self.assertIsInstance(state['documentation_approved'],bool)
 
     def test_docs_gate_fails_before_discovery(self):
-        result = run(sys.executable, 'scripts/validate-docs.py')
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('FAIL', result.stdout)
+        with tempfile.TemporaryDirectory() as td:
+            target = Path(td)
+            (target/'scripts').mkdir()
+            shutil.copy2(ROOT/'scripts/validate-docs.py', target/'scripts/validate-docs.py')
+            (target/'project.config.json').write_text(json.dumps({'conversation_language': None, 'application_ui_languages': []}))
+            result = run(sys.executable, 'scripts/validate-docs.py', cwd=target)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('FAIL', result.stdout)
 
     def test_app_gate_fails_without_approval(self):
-        result = run('bash', 'scripts/quality-gate.sh', '--app')
-        self.assertNotEqual(result.returncode, 0)
+        with tempfile.TemporaryDirectory() as td:
+            target = Path(td)
+            (target/'scripts').mkdir()
+            (target/'tasks').mkdir()
+            shutil.copy2(ROOT/'scripts/quality-gate.sh', target/'scripts/quality-gate.sh')
+            # Isolate the approval boundary; structure/docs are tested independently.
+            for filename in ('validate-docs.py', 'validate-starter.py'):
+                (target/'scripts'/filename).write_text('raise SystemExit(0)\n')
+            (target/'tasks/STATE.json').write_text(json.dumps({'documentation_approved': False}))
+            result = run('bash', 'scripts/quality-gate.sh', '--app', cwd=target)
+            self.assertEqual(result.returncode, 3, result.stdout + result.stderr)
+            self.assertIn('requires approved docs', result.stdout)
+
+    def test_app_gate_distinguishes_missing_empty_failed_and_executed_checks(self):
+        with tempfile.TemporaryDirectory() as td:
+            target = Path(td)
+            (target/'scripts').mkdir()
+            (target/'tasks').mkdir()
+            shutil.copy2(ROOT/'scripts/quality-gate.sh', target/'scripts/quality-gate.sh')
+            for filename in ('validate-docs.py', 'validate-starter.py'):
+                (target/'scripts'/filename).write_text('raise SystemExit(0)\n')
+            (target/'tasks/STATE.json').write_text(json.dumps({'documentation_approved': True}))
+            result = run('bash', 'scripts/quality-gate.sh', '--app', cwd=target)
+            self.assertEqual(result.returncode, 4)
+            (target/'quality').mkdir()
+            commands = target/'quality/commands.txt'
+            commands.write_text('# no executable checks\n')
+            self.assertEqual(run('bash', 'scripts/quality-gate.sh', '--app', cwd=target).returncode, 5)
+            commands.write_text('exit 17\n')
+            self.assertEqual(run('bash', 'scripts/quality-gate.sh', '--app', cwd=target).returncode, 17)
+            commands.write_text('printf verified > actual-check.txt\n')
+            result = run('bash', 'scripts/quality-gate.sh', '--app', cwd=target)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertEqual((target/'actual-check.txt').read_text(), 'verified')
 
     def test_role_agent_files(self):
         roles = sorted((ROOT/'.codex/agents').glob('*.toml'))
@@ -66,7 +103,7 @@ class StarterTests(unittest.TestCase):
             (target/'scripts').mkdir()
             (target/'tasks').mkdir()
             shutil.copy2(ROOT/'scripts/project-state.py',target/'scripts/project-state.py')
-            shutil.copy2(ROOT/'tasks/STATE.json',target/'tasks/STATE.json')
+            (target/'tasks/STATE.json').write_text(json.dumps({'documentation_approved':False}))
             shutil.copy2(ROOT/'project.config.json',target/'project.config.json')
             language = run(sys.executable,'scripts/project-state.py','language','pl',cwd=target)
             self.assertEqual(language.returncode,0,language.stderr)
@@ -94,7 +131,7 @@ class StarterTests(unittest.TestCase):
             (target/'scripts').mkdir()
             (target/'tasks').mkdir()
             shutil.copy2(ROOT/'scripts/task-ledger.py',target/'scripts/task-ledger.py')
-            shutil.copy2(ROOT/'tasks/backlog.json',target/'tasks/backlog.json')
+            (target/'tasks/backlog.json').write_text(json.dumps({'schema_version':1,'tasks':[]}))
             a=run(sys.executable,'scripts/task-ledger.py','add','TASK-001','--title','Create sample','--owner','backend-engineer','--scope','backend/**','--acceptance','All tests passing',cwd=target)
             self.assertEqual(a.returncode,0,a.stderr)
             self.assertEqual(run(sys.executable,'scripts/task-ledger.py','start','TASK-001',cwd=target).returncode,0)

@@ -95,6 +95,8 @@ bash scripts/quality-gate.sh --starter
 
 Possible causes include missing local Git author identity, staged credentials, oversized tracked files, an actual whitespace violation or a failing quality gate. Check the exact error; **never disable all whitespace verification** to fix one vendor skill.
 
+For an existing repository, supply exact task files to `scripts/git-checkpoint.sh` or use `--staged` after reviewing the index. A first clean baseline uses `--initial` and `MANIFEST.sha256`; unlisted unignored files are refused. Preserve neighboring user files and investigate inventory differences rather than blanket-staging them.
+
 The distribution's `.gitattributes` exempts **trailing end-of-line spaces only in two upstream Vercel skill directories**. Your own files remain checked.
 
 ## Rich does not appear
@@ -118,3 +120,14 @@ Rollback does **not** remove Git commits, user work, global software or third-pa
 ---
 
 **Still blocked?** Capture the exact command, final error, `./install.sh --report` and `git status --short`. Redact private paths, tokens and any sensitive content before sharing.
+
+## 2.1.1 workflow diagnostics
+
+- **Empty dispatch:** zero prepared tasks is a successful no-op when no tasks are dependency-ready. Inspect dependencies rather than creating dummy worktrees.
+- **Scope refused:** use repository-relative paths without traversal. Aliases, parent/child paths and case aliases cannot run concurrently; escaping symlinks are rejected.
+- **Review missing/stale:** `ready_for_review` alone is insufficient. Record an independent `attest-review` with the exact task commit and an existing repository-relative report. Review again after later task commits.
+- **Blocked task:** use `scripts/task-ledger.py resume TASK --evidence 'verified resolution'`; history is retained and previous review evidence is cleared.
+- **Visual QA fails:** inspect the actual CLI exit status and `.exelia/visual/last-run.json`. Both generated projects use Chromium (Desktop Chrome and Pixel 7). Install the package in `app/` and Chromium in `.exelia/browsers`; do not use global browser binaries as a workaround.
+- **Capability drift:** compare selectors, installed names, source records and content hashes. An intentional stack change requires a reviewed refreshed snapshot; unexplained content drift requires investigation.
+
+Actual release checks and limitations are in the [2.1.1 remediation audit](../audits/REMEDIATION_2.1.1.md). Generated browser tests and simulated installation runners are not live execution evidence.

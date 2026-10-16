@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "release": "2.1.1",
+  "verified_at": "2026-10-15",
+  "npm": {
+    "core": {
+      "lockfile": "manifests/tool-dependencies/core/package-lock.json",
+      "sha256": "2c7e1cf0361c5f5289897516917a7032802ec8aa776f495a35b958e7e1d4d50b",
+      "origin": "npm install --package-lock-only --ignore-scripts in physical disposable cwd; official npm registry"
+    },
+    "web": {
+      "lockfile": "manifests/tool-dependencies/web/package-lock.json",
+      "sha256": "dffaaf765f81ffb359ba430ba43fbe1de8ab81c0048aeccb8af476733cb03fd8",
+      "origin": "npm install --package-lock-only --ignore-scripts in physical disposable cwd; official npm registry"
+    }
+  },
+  "python": {
+    "uv": {
+      "version": "0.13.1",
+      "metadata_url": "https://pypi.org/pypi/uv/0.13.1/json",
+      "hashes_file": "manifests/tool-dependencies/requirements-uv.txt"
+    },
+    "ruff": {
+      "version": "0.17.1",
+      "metadata_url": "https://pypi.org/pypi/ruff/0.17.1/json",
+      "hashes_file": "manifests/tool-dependencies/requirements-ruff.txt"
+    }
+  },
+  "skill_sources": {
+    "DietrichGebert/ponytail": {
+      "sha": "84740e3d344b69b4a133201fa519eb37a62a2b2a",
+      "url": "https://api.github.com/repos/DietrichGebert/ponytail/commits/HEAD",
+      "commit_url": "https://github.com/DietrichGebert/ponytail/commit/84740e3d344b69b4a133201fa519eb37a62a2b2a"
+    },
+    "anthropics/skills": {
+      "sha": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "url": "https://api.github.com/repos/anthropics/skills/commits/HEAD",
+      "commit_url": "https://github.com/anthropics/skills/commit/dbd4588f9e1033efb41dad4bef2f7947c8993d44"
+    },
+    "fastapi/fastapi": {
+      "sha": "0b919816378eaa773df7ce4204414c712c9fdbea",
+      "url": "https://api.github.com/repos/fastapi/fastapi/commits/HEAD",
+      "commit_url": "https://github.com/fastapi/fastapi/commit/0b919816378eaa773df7ce4204414c712c9fdbea"
+    },
+    "microsoft/playwright-cli": {
+      "sha": "b85c7a736bb473bf55b584e54a09ffa698d6d871",
+      "url": "https://api.github.com/repos/microsoft/playwright-cli/commits/HEAD",
+      "commit_url": "https://github.com/microsoft/playwright-cli/commit/b85c7a736bb473bf55b584e54a09ffa698d6d871"
+    },
+    "obra/superpowers": {
+      "sha": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
+      "url": "https://api.github.com/repos/obra/superpowers/commits/HEAD",
+      "commit_url": "https://github.com/obra/superpowers/commit/bb92a77741419a4ab5f06e711a283343f1ada0c3"
+    },
+    "pbakaus/impeccable": {
+      "sha": "8a0e198da34ebc5b936a9d5975fb7a3b1cf353b7",
+      "url": "https://api.github.com/repos/pbakaus/impeccable/commits/HEAD",
+      "commit_url": "https://github.com/pbakaus/impeccable/commit/8a0e198da34ebc5b936a9d5975fb7a3b1cf353b7"
+    },
+    "shadcn/ui": {
+      "sha": "c2477f311c19982ef6e246085438e6cfec3e35ea",
+      "url": "https://api.github.com/repos/shadcn/ui/commits/HEAD",
+      "commit_url": "https://github.com/shadcn-ui/ui/commit/c2477f311c19982ef6e246085438e6cfec3e35ea"
+    },
+    "trailofbits/skills": {
+      "sha": "5c99c03fb8a9ea568432ecbcba5d86e9f4ac2bf0",
+      "url": "https://api.github.com/repos/trailofbits/skills/commits/HEAD",
+      "commit_url": "https://github.com/trailofbits/skills/commit/5c99c03fb8a9ea568432ecbcba5d86e9f4ac2bf0"
+    },
+    "vercel-labs/agent-skills": {
+      "sha": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "url": "https://api.github.com/repos/vercel-labs/agent-skills/commits/HEAD",
+      "commit_url": "https://github.com/vercel-labs/agent-skills/commit/063bee94c3f4df8453406c830b0a7df0f2860278"
+    }
+  },
+  "limitations": [
+    "Source revision identifiers were checked against official GitHub API, but complete supplier code has not undergone an independent security audit.",
+    "Playwright and Impeccable skill generators are tied to exact npm package versions; their recorded repository HEAD is not claimed as the package build revision.",
+    "Integrity hashes verify downloaded bytes against registry metadata, not supplier trustworthiness.",
+    "Real dependency installation across all operating systems is not tested."
+  ],
+  "github_actions": {
+    "actions/checkout": "11d5960a326750d5838078e36cf38b85af677262",
+    "actions/setup-python": "a26af69be951a213d495a4c3e4e4022e16d87065"
+  }
+}

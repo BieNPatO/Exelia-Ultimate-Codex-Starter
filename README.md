@@ -17,10 +17,10 @@
 | **Project-local setup** | Skills, Node CLIs and Python tools isolated under the repository |
 | **Repeatable Git delivery** | Local baseline commit, gated checkpoints, no automatic push |
 | **Rich installer** | Bundled Rich interface from first frame, with plain fallback and UI demo |
-| **2.1 capability resolver** | Chooses skills from the approved stack; core skills only before discovery |
+| **2.1.1 capability resolver** | Chooses skills from the approved stack; core skills only before discovery |
 | **Dependency-aware worktrees** | Prepare independent task worktrees, check overlap and integrate only after review |
 | **QA, visual QA and evaluation** | Strict stack-driven test gates, optional Playwright smoke checks, actual agent metrics |
-| **GitHub template ready** | Publication documentation, license, contributing and CI smoke checks |
+| **GitHub template preparation** | Publication documentation, license, contributing and local checks; remote approval remains pending |
 
 ## The complete workflow
 
@@ -175,7 +175,7 @@ python3 -m unittest discover -s tests -v
 python3 tests/integration_smoke.py
 ```
 
-These tests cover the starter structure and simulated installation. Real package downloads, Codex delegation, MCP authentication and a live OrbStack execution environment require separate checks on the destination machine.
+These commands cover starter structure and simulated installation. The [release audit](docs/audits/REMEDIATION_2.1.1.md) separately records real dependency checks, native agent execution and Chromium smoke results against a synthetic local fixture. MCP authentication, product acceptance and destination-platform/runtime checks require their own evidence.
 
 ## Documentation map
 
@@ -193,9 +193,9 @@ These tests cover the starter structure and simulated installation. Real package
 
 ---
 
-**Version 2.1.0 · Intelligent development foundation.** Rich is bundled locally and used from the first frame; compact dashboards replace repeated lists. No global installations.
+**Version 2.1.1 · Stability & Security Release Candidate.** Rich is bundled locally and used from the first frame; compact dashboards replace repeated lists. No global installations.
 
-## GitHub-ready workflow (2.1)
+## GitHub template workflow (2.1.1)
 
 To publish this starter once, follow [GitHub setup](docs/GITHUB_SETUP.md). For each new app use GitHub **Use this template**, then clone that app's separate repository. Plain cloning the starter directly retains its `origin` and should be used to contribute to the starter itself.
 
@@ -210,4 +210,8 @@ python3 -m exelia eval summary
 ```
 
 > [!WARNING]
-> Project worktrees are **not** process sandboxing. The CLI does not launch subagents itself: the live Codex coordinator delegates the generated packets. External skill sources are not yet pinned to audited Git revisions. Do not claim unattended production-grade safety or exact reproducibility.
+> Project worktrees are **not** process sandboxing. The CLI does not launch subagents itself: the live Codex coordinator delegates the generated packets. Dependency provenance and remaining reproducibility limits are recorded in the release audit. Do not claim unattended production-grade safety or exact reproducibility.
+
+## Release candidate status
+
+The 2.1.1 candidate targets the sixteen post-installation findings. See the [remediation audit](docs/audits/REMEDIATION_2.1.1.md) for finding status, actual commands, independent reviews, archive verification and remaining blockers. This document does not grant public release approval. Browser template generation, simulated installation tests and registered agent definitions are distinct from live browser execution, upstream downloads and native agent execution.

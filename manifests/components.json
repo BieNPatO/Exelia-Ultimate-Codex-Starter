@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "version": "2.1.0",
+  "version": "2.1.1",
   "tools": [
     {
       "id": "git",
@@ -25,7 +25,7 @@
     {
       "id": "node",
       "binary": "node",
-      "minimum": "20",
+      "minimum": "22.20",
       "category": "core",
       "mac_brew": "node",
       "linux_apt": "nodejs",
@@ -74,14 +74,14 @@
       "linux_apt": null,
       "linux_dnf": null,
       "install": "local-python",
-      "package": "uv"
+      "package": "uv==0.13.1"
     },
     {
       "id": "playwright-cli",
       "binary": "playwright-cli",
       "category": "recommended",
       "install": "local-npm",
-      "package": "@playwright/cli"
+      "package": "@playwright/cli@0.1.22"
     },
     {
       "id": "gh",
@@ -98,20 +98,20 @@
       "category": "recommended",
       "mac_brew": "ruff",
       "install": "local-python",
-      "package": "ruff"
+      "package": "ruff==0.17.1"
     },
     {
       "id": "skills-cli",
       "binary": "skills",
       "install": "local-npm",
-      "package": "skills",
+      "package": "skills@1.7.2",
       "category": "internal"
     },
     {
       "id": "impeccable-cli",
       "binary": "impeccable",
       "install": "local-npm",
-      "package": "impeccable",
+      "package": "impeccable@4.5.2",
       "category": "internal"
     },
     {
@@ -126,47 +126,56 @@
     {
       "name": "frontend-design",
       "source": "anthropics/skills",
-      "profile": "web"
+      "profile": "web",
+      "commit": "dbd4588f9e1033efb41dad4bef2f7947c8993d44"
     },
     {
       "name": "vercel-react-best-practices",
       "source": "vercel-labs/agent-skills",
-      "profile": "web"
+      "profile": "web",
+      "commit": "063bee94c3f4df8453406c830b0a7df0f2860278"
     },
     {
       "name": "vercel-composition-patterns",
       "source": "vercel-labs/agent-skills",
-      "profile": "web"
+      "profile": "web",
+      "commit": "063bee94c3f4df8453406c830b0a7df0f2860278"
     },
     {
       "name": "web-design-guidelines",
       "source": "vercel-labs/agent-skills",
-      "profile": "web"
+      "profile": "web",
+      "commit": "063bee94c3f4df8453406c830b0a7df0f2860278"
     },
     {
       "name": "shadcn",
       "source": "shadcn/ui",
-      "profile": "web"
+      "profile": "web",
+      "commit": "c2477f311c19982ef6e246085438e6cfec3e35ea"
     },
     {
       "name": "fastapi",
       "source": "fastapi/fastapi",
-      "profile": "python"
+      "profile": "python",
+      "commit": "0b919816378eaa773df7ce4204414c712c9fdbea"
     },
     {
       "name": "systematic-debugging",
       "source": "obra/superpowers",
-      "profile": "core"
+      "profile": "core",
+      "commit": "bb92a77741419a4ab5f06e711a283343f1ada0c3"
     },
     {
       "name": "verification-before-completion",
       "source": "obra/superpowers",
-      "profile": "core"
+      "profile": "core",
+      "commit": "bb92a77741419a4ab5f06e711a283343f1ada0c3"
     },
     {
       "name": "differential-review",
       "source": "trailofbits/skills",
-      "profile": "security"
+      "profile": "security",
+      "commit": "5c99c03fb8a9ea568432ecbcba5d86e9f4ac2bf0"
     },
     {
       "name": "impeccable",
@@ -184,7 +193,8 @@
       "name": "ponytail",
       "source": "DietrichGebert/ponytail",
       "profile": "core",
-      "installer": "skills-cli"
+      "installer": "skills-cli",
+      "commit": "84740e3d344b69b4a133201fa519eb37a62a2b2a"
     }
   ],
   "plugins": [

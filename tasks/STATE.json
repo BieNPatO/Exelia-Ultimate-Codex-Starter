@@ -9,5 +9,14 @@
   "last_verified_commit": null,
   "last_quality_gate": "NOT_RUN",
   "blockers": [],
-  "updated_at": null
+  "updated_at": null,
+  "starter_release_verification": {
+    "version": "2.1.1",
+    "status": "ready_for_review",
+    "quality_gate": "PASS",
+    "unit_test_methods": 111,
+    "evidence": "docs/audits/REMEDIATION_2.1.1.json",
+    "application_gate": "BLOCKED: discovery documentation intentionally unapproved",
+    "note": "Release maintenance authorized separately; product phase and approval fields preserved."
+  }
 }

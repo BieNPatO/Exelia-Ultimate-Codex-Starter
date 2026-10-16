@@ -23,6 +23,8 @@ Use that language for all human-facing dialogue, summaries and stage announcemen
 python3 scripts/project-state.py ui-language en,pl
 ```
 
+UI tags support the documented `language[-Script][-REGION][-variant]` subset, including `en-US`, `zh-Hant` and `es-419`. Extensions and private-use tags are unsupported; this is not a full BCP 47 registry validator.
+
 The command above is an **example**, not a default UI language selection.
 
 ## 2. Inspect the project before acting
@@ -99,7 +101,7 @@ Never automatically push, publish, deploy to production, or access host resource
 
 > W jakim języku chcesz rozmawiać i pisać prompty do Codexa — po polsku czy po angielsku? / Would you like to communicate with Codex in Polish or English?
 
-## 7. Executable Exelia 2.1 delivery controls
+## 7. Executable Exelia 2.1.1 delivery controls
 
 After actual written approval and with the chosen stack recorded in `project.config.json`:
 
@@ -108,7 +110,9 @@ After actual written approval and with the chosen stack recorded in `project.con
 3. Plan real, bounded, dependency-aware tasks in `tasks/backlog.json`, using coordinator-only `scripts/task-ledger.py`. Assign nonoverlapping file scopes for concurrent work.
 4. Use `python3 -m exelia dispatch plan` before `dispatch prepare`; the latter creates isolated Git worktrees and packets. Delegate those packets through **native Codex subagents** in the live session, with each worker using the assigned worktree. Never claim the Python CLI itself spawned the agents.
 5. Create product QA only from real application structure (`python3 -m exelia quality plan`, then `quality configure` when ready). Add Playwright smoke checks for web projects (`visual plan/setup/run`) and expand tests to product acceptance criteria.
-6. Independently review and validate committed worktree changes, move tasks to `ready_for_review`, inspect `worktrees integrate ID`, then perform the explicitly authorized merge with `--confirm` and re-run main QA. No automatic push, deployment or force-reset.
+6. Independently review and validate committed worktree changes, move tasks to `ready_for_review`, and record `attest-review` with reviewer identifier, exact commit, result and an existing repository-relative evidence file. A new task commit invalidates the attestation. Inspect `worktrees integrate ID`, then perform the explicitly authorized merge with `--confirm` and re-run main QA. No automatic push, deployment or force-reset.
 7. Record actual per-agent pass/fail, duration and optional observed token/cost metrics (`python3 -m exelia eval record`), without invented values. Update docs and ledger; make local Git checkpoints.
 
 Consult [automation workflow](docs/automation/WORKFLOW.md) before a multi-agent implementation. CLI enforcement is deterministic but does not replace the Codex sandbox or real approval controls.
+
+For checkpoint scope, review attestation examples and blocked-task recovery, follow the [delivery workflow](docs/automation/WORKFLOW.md). Candidate verification and outstanding limits are in the [2.1.1 audit](docs/audits/REMEDIATION_2.1.1.md).

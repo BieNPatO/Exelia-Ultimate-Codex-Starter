@@ -10,5 +10,13 @@
 8. The interactive Impeccable upstream installer may offer multiple scopes; choose only Project. Do not auto-select an unverified CLI argument.
 9. Local npm/pip package caches may still live under HOME (normal ecosystem behavior); no global installed binaries/plugins/skills are touched.
 10. `approval_policy=on-request` with workspace-write and network disabled is not full host security. An unconstrained Docker socket grants broad host privileges. Avoid host root mounts and real production credentials.
-11. Installer command output logs are stored under ignored `.exelia-install/` with best-effort redaction; review logs before sharing externally.
+11. Installer command output logs are stored under ignored `.exelia-install/` with restrictive permissions and best-effort redaction of common bearer headers, token/API-key/password fields and environment assignments. Do not collect real credentials for tests; review logs before sharing externally.
 12. Rollback is limited to configuration files backed up before changes; it never uninstalls host software, rewrites Git history or deletes user edits.
+
+For source/history scanning, review attestations, dependency provenance and 2.1.1 residual limits, see the [root security policy](../../SECURITY.md) and [remediation audit](../audits/REMEDIATION_2.1.1.md).
+
+Tool installs use checked-in core/web npm lock profiles (`npm ci`) and hashed Python requirements (`--require-hashes`) under `manifests/tool-dependencies/`. Immutable source revisions and registry provenance are recorded in `manifests/dependency-provenance.json`. Updating these files requires source, integrity and license review plus fresh isolated installation checks; recorded hashes are not a supplier security certification.
+
+## Managed runtime paths
+
+The installer rejects redirected managed directories, caches, state, logs and skill destinations before writing. Local tool launchers require resolved executable paths inside the managed project prefix. Python installs isolate pip configuration and use explicit local prefix/cache paths; npm explicitly disables global installation. Standard virtual-environment interpreter aliases remain allowed. These checks do not provide process isolation or prevent a hostile same-user process from concurrently changing the filesystem.

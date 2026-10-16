@@ -34,7 +34,8 @@ class InstallerTests(unittest.TestCase):
         self.assertTrue(all(x['scope']=='project' for x in runnable))
         for x in runnable:
             text=' '.join(x['command'])
-            self.assertNotIn('--global',text)
+            self.assertFalse(any('--global' in arg and arg != '--global=false' for arg in x['command']))
+            self.assertNotIn('--location=global', x['command'])
             self.assertNotIn(' -g ',text)
             self.assertNotIn('brew install',text)
             self.assertNotIn('sudo',text)

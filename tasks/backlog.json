@@ -1,4 +1,141 @@
 {
   "schema_version": 1,
-  "tasks": []
+  "tasks": [
+    {
+      "id": "RC211-BACKEND",
+      "title": "Remediate scope, capabilities, dispatch and review state",
+      "owner": "backend_engineer",
+      "scope": "exelia/worktrees.py,exelia/capabilities.py,exelia/dispatch.py,scripts/task-ledger.py,scripts/project-state.py",
+      "acceptance": "F01 F04 F07 F11 F14 F15 regressions pass",
+      "dependencies": [],
+      "status": "ready_for_review",
+      "evidence": [
+        {
+          "checked_at": "2026-10-16T05:46:42.325150+00:00",
+          "gate": "PASS",
+          "scope": "starter maintenance only",
+          "command": "bash scripts/quality-gate.sh --starter; python3 tests/integration_smoke.py",
+          "evidence": "docs/audits/REMEDIATION_2.1.1.json",
+          "note": "111-test source gate and installed/clean export integration pass; separate final external audit remains pending. Product app completion gate is not bypassed."
+        }
+      ],
+      "updated_at": "2026-10-16T05:46:42.193418+00:00",
+      "history": [
+        {
+          "at": "2026-10-15T19:55:31.535153+00:00",
+          "action": "start",
+          "from": "todo",
+          "to": "in_progress"
+        },
+        {
+          "at": "2026-10-16T05:46:42.193346+00:00",
+          "action": "review",
+          "from": "in_progress",
+          "to": "ready_for_review"
+        }
+      ]
+    },
+    {
+      "id": "RC211-DEVOPS",
+      "title": "Remediate checkpoint, integration, dependencies and infrastructure",
+      "owner": "devops_engineer",
+      "scope": "scripts/git-checkpoint.sh,installer/localtools.py,manifests,tests/integration_smoke.py,.github,infrastructure",
+      "acceptance": "F03 F05 F12 F16 evidence and residual limitations recorded",
+      "dependencies": [],
+      "status": "ready_for_review",
+      "evidence": [
+        {
+          "checked_at": "2026-10-16T05:46:42.325248+00:00",
+          "gate": "PASS",
+          "scope": "starter maintenance only",
+          "command": "bash scripts/quality-gate.sh --starter; python3 tests/integration_smoke.py",
+          "evidence": "docs/audits/REMEDIATION_2.1.1.json",
+          "note": "111-test source gate and installed/clean export integration pass; separate final external audit remains pending. Product app completion gate is not bypassed."
+        }
+      ],
+      "updated_at": "2026-10-16T05:46:42.234810+00:00",
+      "history": [
+        {
+          "at": "2026-10-15T19:55:31.612489+00:00",
+          "action": "start",
+          "from": "todo",
+          "to": "in_progress"
+        },
+        {
+          "at": "2026-10-16T05:46:42.234726+00:00",
+          "action": "review",
+          "from": "in_progress",
+          "to": "ready_for_review"
+        }
+      ]
+    },
+    {
+      "id": "RC211-SECURITY",
+      "title": "Remediate redaction and publication guards",
+      "owner": "security_auditor",
+      "scope": "exelia/security.py,scripts/check-publication.py,installer/engine.py",
+      "acceptance": "F09 F10 F13 synthetic regressions pass",
+      "dependencies": [],
+      "status": "ready_for_review",
+      "evidence": [
+        {
+          "checked_at": "2026-10-16T05:46:42.325250+00:00",
+          "gate": "PASS",
+          "scope": "starter maintenance only",
+          "command": "bash scripts/quality-gate.sh --starter; python3 tests/integration_smoke.py",
+          "evidence": "docs/audits/REMEDIATION_2.1.1.json",
+          "note": "111-test source gate and installed/clean export integration pass; separate final external audit remains pending. Product app completion gate is not bypassed."
+        }
+      ],
+      "updated_at": "2026-10-16T05:46:42.277634+00:00",
+      "history": [
+        {
+          "at": "2026-10-15T19:55:31.691380+00:00",
+          "action": "start",
+          "from": "todo",
+          "to": "in_progress"
+        },
+        {
+          "at": "2026-10-16T05:46:42.277559+00:00",
+          "action": "review",
+          "from": "in_progress",
+          "to": "ready_for_review"
+        }
+      ]
+    },
+    {
+      "id": "RC211-QA",
+      "title": "Verify visual CLI and configuration-independent tests",
+      "owner": "coordinator",
+      "scope": "exelia/visual.py,exelia/__main__.py,tests/test_starter.py,tests/test_post_discovery.py",
+      "acceptance": "F02 F06 F08 regression and clean export checks pass",
+      "dependencies": [],
+      "status": "ready_for_review",
+      "evidence": [
+        {
+          "checked_at": "2026-10-16T05:46:42.325251+00:00",
+          "gate": "PASS",
+          "scope": "starter maintenance only",
+          "command": "bash scripts/quality-gate.sh --starter; python3 tests/integration_smoke.py",
+          "evidence": "docs/audits/REMEDIATION_2.1.1.json",
+          "note": "111-test source gate and installed/clean export integration pass; separate final external audit remains pending. Product app completion gate is not bypassed."
+        }
+      ],
+      "updated_at": "2026-10-16T05:46:42.319702+00:00",
+      "history": [
+        {
+          "at": "2026-10-15T19:55:31.768974+00:00",
+          "action": "start",
+          "from": "todo",
+          "to": "in_progress"
+        },
+        {
+          "at": "2026-10-16T05:46:42.319621+00:00",
+          "action": "review",
+          "from": "in_progress",
+          "to": "ready_for_review"
+        }
+      ]
+    }
+  ]
 }

@@ -1,0 +1,10 @@
+{
+  "name": "exelia-project-tools",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "skills": "1.7.2",
+    "@playwright/cli": "0.1.22",
+    "impeccable": "4.5.2"
+  }
+}

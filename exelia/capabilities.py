@@ -16,6 +16,7 @@ def resolve(root: Path = ROOT, *, include_qa: bool = False, include_security: bo
     cfg = load(root / 'project.config.json', {})
     stack = cfg.get('stack') or {}
     settings = cfg.get('capabilities') or {}
+    selectors = {'include_qa': include_qa, 'include_security': include_security}
     include_qa = include_qa or bool(settings.get('visual_qa', False))
     include_security = include_security or bool(settings.get('security_review', False))
     frontend = (stack.get('frontend') or '').lower()
@@ -34,6 +35,10 @@ def resolve(root: Path = ROOT, *, include_qa: bool = False, include_security: bo
     out = []
     for name in dict.fromkeys(selected):
         path = root / '.agents/skills' / name / 'SKILL.md'
+        if (not path.resolve().is_relative_to(root.resolve())
+                or any(parent.is_symlink() for parent in
+                       (root / '.agents', root / '.agents/skills', path.parent, path))):
+            raise RuntimeError('Skill path must remain inside the project without symlinks: ' + name)
         digest = None
         files_count = 0
         if path.is_file() and not path.is_symlink() and not path.parent.is_symlink():
@@ -48,24 +53,31 @@ def resolve(root: Path = ROOT, *, include_qa: bool = False, include_security: bo
                 files_count += 1
             digest = hasher.hexdigest()
         out.append({'name': name, 'source': known.get(name, {}).get('source'),
+                    'source_revision': known.get(name, {}).get('commit'),
                     'installed_local': bool(digest), 'sha256': digest, 'files_hashed': files_count,
                     'revision_pinned': bool(known.get(name, {}).get('commit'))})
-    return {'schema_version': 1, 'generated_at': utc(), 'stack': stack,
+    return {'schema_version': 2, 'generated_at': utc(), 'stack': stack, 'selectors': selectors,
             'selected': out, 'missing': [x['name'] for x in out if not x['installed_local']],
-            'warning': 'Upstream revisions are not pinned in installer manifest; local SHA-256 records installed content, not supplier provenance.'}
+            'warning': 'Local SHA-256 records installed content, not supplier provenance; recorded revision pins do not authenticate package builds or suppliers.'}
 
 
 def audit(root: Path = ROOT):
     locked = load(root / 'manifests/skills.lock.json')
     if not locked:
         return {'status': 'NOT_LOCKED', 'detail': 'Run capabilities freeze after installing selected skills.'}
-    local = {item['name']: item for item in resolve(root)['selected']}
+    current_snapshot = resolve(root, **locked.get('selectors', {}))
+    local = {item['name']: item for item in current_snapshot['selected']}
+    previous = {item['name']: item for item in locked['selected']}
     differences = []
-    for item in locked['selected']:
-        current = local.get(item['name'])
-        if current is None or current['sha256'] != item['sha256']:
-            differences.append({'name':item['name'], 'expected':item['sha256'], 'current':current['sha256'] if current else None})
+    for name in sorted(previous.keys() | local.keys()):
+        expected, current = previous.get(name), local.get(name)
+        fields = ('sha256', 'installed_local', 'source', 'source_revision')
+        if expected is None or current is None or not current['installed_local'] or any(current.get(key) != expected.get(key) for key in fields):
+            differences.append({'name': name, 'expected': expected, 'current': current})
+    if locked.get('stack') != current_snapshot['stack']:
+        differences.append({'field': 'stack', 'expected': locked.get('stack'), 'current': current_snapshot['stack']})
     return {'status': 'PASS' if not differences else 'DRIFT', 'differences':differences,
+            'missing': current_snapshot['missing'],
             'note':'Detects local file changes only; no upstream authenticity guarantee.'}
 
 def freeze(root: Path = ROOT, **kwargs):

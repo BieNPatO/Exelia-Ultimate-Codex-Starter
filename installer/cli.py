@@ -57,7 +57,7 @@ def main(argv=None):
         ui.demo()
         return 0
     if args.allow_system_changes:
-        print('ERROR: Exelia 2.1.0 is project-local only. --allow-system-changes is disabled. Install host prerequisites yourself.',file=sys.stderr)
+        print('ERROR: Exelia 2.1.1 is project-local only. --allow-system-changes is disabled. Install host prerequisites yourself.',file=sys.stderr)
         return 2
     manifest=read_json(MANIFEST)
     if not manifest:

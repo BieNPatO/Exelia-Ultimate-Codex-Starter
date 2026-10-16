@@ -1,3 +1,11 @@
+# Release audit index — Exelia Ultimate Codex Starter 2.1.1 RC
+
+The current release decision and F01–F16 evidence are in [REMEDIATION_2.1.1.md](docs/audits/REMEDIATION_2.1.1.md) and its [machine-readable report](docs/audits/REMEDIATION_2.1.1.json). Consult that report for test counts, command exit codes, native agent evidence, independent reviews, source/archive provenance and remaining limitations. Public GitHub publication is not authorized by this candidate.
+
+The following 2.1.0 report is preserved as historical decision evidence. Its test counts, risk list and readiness conclusion describe that earlier baseline and must not be interpreted as current verification.
+
+---
+
 # Exelia Ultimate Codex Starter 2.1.0 — Release audit
 
 **Audit date:** 2026-10-15

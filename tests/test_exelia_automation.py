@@ -32,9 +32,12 @@ def repository(root, *, status='todo', approved=False, tasks=None):
 
 class CapabilityTests(unittest.TestCase):
     def test_core_only_before_discovery(self):
-        value=capabilities.resolve(ROOT)
-        self.assertEqual([x['name'] for x in value['selected']],list(capabilities.CORE))
-        self.assertNotIn('frontend-design',[x['name'] for x in value['selected']])
+        with tempfile.TemporaryDirectory() as d:
+            root=pathlib.Path(d)
+            save(root/'project.config.json',{'stack':{}})
+            value=capabilities.resolve(root)
+            self.assertEqual([x['name'] for x in value['selected']],list(capabilities.CORE))
+            self.assertNotIn('frontend-design',[x['name'] for x in value['selected']])
 
     def test_selects_stack_specific_skills(self):
         with tempfile.TemporaryDirectory() as d:
@@ -59,7 +62,7 @@ class CapabilityTests(unittest.TestCase):
             self.assertEqual(capabilities.audit(root)['status'],'PASS')
             (root/'.agents/skills/ponytail/SKILL.md').write_text('tampered')
             self.assertEqual(capabilities.audit(root)['status'],'DRIFT')
-            self.assertIn('not pinned',value['warning'])
+            self.assertIn('not supplier provenance',value['warning'])
             self.assertTrue((root/'manifests/skills.lock.json').is_file())
 
 
@@ -108,6 +111,11 @@ class SchedulerTests(unittest.TestCase):
             subprocess.run(['git','commit','-qm','feat: implemented'],cwd=working,check=True)
             backlog=json.loads((root/'tasks/backlog.json').read_text())
             backlog['tasks'][0]['status']='ready_for_review'
+            from exelia.common import utc
+            (root/'review.md').write_text('Independent fixture review: PASS; no outstanding findings.\n')
+            backlog['tasks'][0]['review']={'reviewer':'independent-reviewer','result':'PASS',
+                'commit':subprocess.run(['git','rev-parse',entry['branch']],cwd=root,capture_output=True,text=True,check=True).stdout.strip(),
+                'timestamp':utc(),'evidence':'review.md','outstanding_findings':[]}
             save(root/'tasks/backlog.json',backlog)
             subprocess.run(['git','add','-A'],cwd=root,check=True)
             subprocess.run(['git','commit','-qm','test: reviewed'],cwd=root,check=True)

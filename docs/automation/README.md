@@ -1,4 +1,4 @@
-# Exelia 2.1 — execution modules
+# Exelia 2.1.1 — execution modules
 
 > [!IMPORTANT]
 > All CLI operations are **repository-local**. The tool does not start a daemon, clone remote repositories, authenticate Codex, grant sandbox permissions, launch subagents on its own or automatically push/deploy code.
@@ -18,3 +18,5 @@ Exelia combines auditable Python commands with native Codex subagents. The coord
 | Evaluation | `python3 -m exelia eval summary` | `... eval record` | Invent token counts or claim model comparisons are scientific benchmarks |
 
 For complete steps and boundaries see [Workflow](WORKFLOW.md), [Quality and visual QA](QUALITY.md), [GitHub publishing](../GITHUB_SETUP.md).
+
+Release behavior and known limitations are tracked in the [2.1.1 remediation audit](../audits/REMEDIATION_2.1.1.md). Task status is not review evidence; the [workflow](WORKFLOW.md) documents exact-commit attestations and controlled recovery.

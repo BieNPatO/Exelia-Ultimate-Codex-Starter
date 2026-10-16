@@ -53,7 +53,13 @@ def main(argv=None):
                                           duration=args.seconds,tokens=args.tokens,cost=args.usd,evidence=args.evidence)
         else:result=models.recommend(ROOT,args.stage,args.risk)
         dump(result)
+        if args.area == "visual" and args.action == "run":
+            code = result["exit_code"]
+            return code if code >= 0 else 128 - code
         return 0
+    except KeyboardInterrupt:
+        print("EXELIA ERROR: interrupted", file=sys.stderr)
+        return 130
     except (RuntimeError, ValueError, OSError, KeyError) as exc:
         print('EXELIA ERROR:',str(exc),file=sys.stderr)
         return 2

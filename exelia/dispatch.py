@@ -23,6 +23,12 @@ def dispatch(root: Path = ROOT, *, limit: int = 3, prepare=False):
     if prepare:
         approved(root)
     selection = worktrees.schedule(root, limit=limit)
+    selection['packets'] = []
+    if not selection['ready']:
+        if prepare:
+            selection['prepared'] = []
+        selection['note'] = 'No dependency-ready tasks; successful no-op, no worktrees or packets written.'
+        return selection
     by_id = {task['id']: task for task in all_tasks(root)}
     made = []
     # Preserve MAIN working tree until all worktrees are safely created.

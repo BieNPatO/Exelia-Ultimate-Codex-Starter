@@ -4,7 +4,7 @@
 Never downloads dependencies, never touches user directories, never invokes
 host-level package installation. Verifies the real quality-gated Git baseline.
 """
-import json,os,pathlib,shutil,subprocess,tempfile
+import hashlib,json,os,pathlib,shutil,subprocess,tempfile
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 
 def write_bin(p,body):
@@ -18,7 +18,31 @@ def run(cmd,cwd,env,timeout=210):
 def main():
   with tempfile.TemporaryDirectory(prefix='exelia_local_scope_') as td:
     base=pathlib.Path(td);repo=base/'new-project'
-    shutil.copytree(ROOT,repo,ignore=shutil.ignore_patterns('__pycache__','.exelia-install','.git','*.pyc','MANIFEST.sha256','.exelia-tools'))
+    original_skills = {'project-delivery', 'premium-motion', 'python-backend-engineering'}
+    def source_only(directory, names):
+        if pathlib.Path(directory) == ROOT / '.agents/skills':
+            return set(names) - original_skills
+        return {name for name in names if name in {'.git', '.exelia-tools', '.exelia-install', '.exelia',
+                '__pycache__', 'node_modules', '.venv', '.pytest_cache', '.ruff_cache', '.DS_Store'}
+                or name.endswith(('.pyc', '.log'))}
+    shutil.copytree(ROOT, repo, ignore=source_only)
+    # The source may already have completed discovery or accumulated task history.
+    # This scenario intentionally exercises a fresh core-only project.
+    config = json.loads((repo / 'project.config.json').read_text())
+    config.update(conversation_language=None, application_ui_languages=[], project_name=None,
+                  stack={'frontend': None, 'backend': None, 'database': None},
+                  capabilities={'visual_qa': False, 'security_review': False})
+    (repo / 'project.config.json').write_text(json.dumps(config, indent=2) + '\n')
+    state = {'schema_version': 1, 'phase': 'discovery', 'documentation_approved': False,
+             'approval_evidence': None, 'approval_at': None, 'current_stage': None,
+             'current_task_id': None, 'last_verified_commit': None, 'last_quality_gate': 'NOT_RUN',
+             'blockers': [], 'updated_at': None}
+    (repo / 'tasks/STATE.json').write_text(json.dumps(state, indent=2) + '\n')
+    (repo / 'tasks/backlog.json').write_text(json.dumps({'schema_version': 1, 'tasks': []}) + '\n')
+    # Rebuild the exact fixture source inventory before adding mocked runtimes.
+    files = sorted(p for p in repo.rglob('*') if p.is_file() and p.name != 'MANIFEST.sha256')
+    (repo / 'MANIFEST.sha256').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest() + '  ' +
+        p.relative_to(repo).as_posix() + '\n' for p in files))
     fake=base/'bin';fake.mkdir();log=base/'executed.txt'
     flag=base/'ponytail-global-command-was-called'
     write_bin(fake/'codex',r'''
@@ -32,14 +56,14 @@ esac
     write_bin(fake/'npm',r'''
 if [[ "${1:-}" == --version ]];then echo '11.2.0';exit 0;fi
 printf 'npm %s\n' "$*" >> "$EXELIA_MOCK_LOG"
-[[ "${1:-}" == install ]] || exit 6
-prefix='';pkg='';next=0
+[[ "${1:-}" == ci ]] || exit 6
+prefix="$PWD";pkg='skills';next=0
 for x in "$@";do
  if [[ $next == 1 ]];then prefix="$x";next=0;continue;fi
  if [[ "$x" == --prefix ]];then next=1;continue;fi
- if [[ "$x" != -* && "$x" != install && "$x" != "$prefix" ]];then pkg="$x";fi
+
 done
-[[ "$prefix" == "$PWD/.exelia-tools/node" ]] || { echo "nonlocal npm prefix: $prefix" >&2;exit 7; }
+[[ "$prefix" == */.exelia-tools/node ]] || { echo "nonlocal npm prefix: $prefix" >&2;exit 7; }
 mkdir -p "$prefix/node_modules/.bin"
 case "$pkg" in
  skills) name=skills;;

@@ -4,7 +4,7 @@ import json, os, re, shutil, subprocess, sys, tomllib
 from pathlib import Path
 from typing import Any
 from .platforms import detect
-from .localtools import node_bin, python_bin
+from .localtools import node_bin, python_bin, local_executable
 
 VERSION = re.compile(r'(?<![\w.])v?(\d+(?:\.\d+){0,3})(?![\d.])')
 
@@ -53,11 +53,11 @@ def tool_info(tool: dict, root: Path) -> dict:
                 'version':version(res['output']) if res['ok'] else None,
                 'detail':'Rich present in project venv' if res['ok'] else 'Rich missing in project venv'}
     if mode=='local-npm':
-        candidate=node_bin(root,binary)
-        path=str(candidate) if candidate.is_file() else None
+        candidate=local_executable(root,binary)
+        path=str(candidate) if candidate else None
     elif mode=='local-python':
-        candidate=python_bin(root,binary)
-        path=str(candidate) if candidate.is_file() else None
+        candidate=local_executable(root,binary)
+        path=str(candidate) if candidate else None
     else:
         path = sys.executable if tool['id']=='python' else shutil.which(binary)
     if not path:
@@ -89,7 +89,7 @@ def scan_skill(name: str, root: Path, home: Path) -> dict:
             return (content.startswith('---\n') and '\nname:' in content[:700]
                     and '\ndescription:' in content[:900])
         except (OSError, UnicodeError): return False
-    found=[str(folder) for folder in projects if valid(folder)]
+    found=[str(folder) for folder in projects if folder.resolve().is_relative_to(root.resolve()) and valid(folder)]
     existing_global=any(valid(folder) for folder in globals_)
     if found:
         return {'status':'ready','locations':found,'detail':'project-local SKILL.md verified',

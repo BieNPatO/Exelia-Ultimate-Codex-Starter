@@ -38,6 +38,10 @@ Do not push, deploy, bypass quality gates, change global plugins, or install dep
 
 **Start by inspecting the actual state and reporting the handoff; do not claim work is complete without evidence.**
 
-## Exelia 2.1 workspace recovery
+## Exelia 2.1.1 workspace recovery
 
 Read `tasks/STATE.json`, `tasks/backlog.json`, `project.config.json` and `git status` first. Run `python3 -m exelia worktrees status` to discover machine-local worktrees; this is not proof that Codex sessions are still running. Recreate task packets with `python3 -m exelia dispatch plan`. Never recreate or delete an existing task branch automatically or claim a worktree is clean without checking it. Re-run product QA and any configured visual tests before completion.
+
+A blocked task can return to `todo` only through `python3 scripts/task-ledger.py resume TASK --evidence 'what changed and where it was verified'`. This preserves history and invalidates previous review evidence; dependency checks still apply when starting it. A `ready_for_review` status alone never proves an independent review. Record a fresh `attest-review` for the exact task commit before integration or completion; see [workflow](docs/automation/WORKFLOW.md).
+
+An empty or dependency-blocked dispatch plan is a successful no-op with zero prepared tasks. Do not create branches merely to make an empty queue appear active. Consult the [candidate audit](docs/audits/REMEDIATION_2.1.1.md) for verified behavior and residual limits.

@@ -1,3 +1,15 @@
+## 2.1.1 — Stability & Security Release Candidate (2026-10-16)
+
+- Normalize task scopes, reject traversal and escaping symlinks, and serialize portable case aliases and parent/child ownership.
+- Propagate Visual QA failures through the CLI; use Chromium-compatible desktop and Pixel 7 smoke projects.
+- Audit selected skills, optional selectors, source records and content drift; exercise core, React, Python and combined configurations.
+- Handle empty dispatch queues without worktree creation; reopen blocked tasks with evidence and preserved history.
+- Require structured independent review evidence tied to the exact task commit before integration and completion.
+- Share nested sensitive-file protection, redact synthetic credential formats in installer logs, and scan release content and reachable local Git history.
+- Harden checkpoint scope, installation fixtures and dependency policies; preserve project-local isolation and first-frame Rich.
+- Accept documented language, script, region and variant UI tags separately from Polish/English conversation settings.
+- See the [remediation audit](docs/audits/REMEDIATION_2.1.1.md) for executed tests, dependency provenance, infrastructure pinning status and residual limitations. Final independent audit and public publication approval remain separate.
+
 ## 2.1.0 — Intelligent development foundation (2026-10-15)
 
 - Added project capability selection driven by the actual stack and optional visual/security policies; bootstrap defaults to core skills and installs chosen extensions locally with a later `--resume`.

@@ -9,6 +9,7 @@ import contextlib, datetime, hashlib, json, os, re, shutil, subprocess, sys, tem
 from pathlib import Path
 from .probe import inspect, command
 from .localtools import node_bin, python_bin, install_node, install_python
+from exelia.security import redact
 
 SKIP = {'ready', 'already_available'}
 
@@ -24,7 +25,32 @@ def read_json(path: Path, default: dict | None = None) -> dict:
         return dict(default or {})
 
 
+def project_path_guard(root: Path, path: Path):
+    """Reject redirected writable paths, including symlinks in any project ancestor."""
+    try:
+        parts = path.relative_to(root).parts
+    except ValueError as error:
+        raise RuntimeError('Installer writable path escapes project') from error
+    if '..' in parts:
+        raise RuntimeError('Installer path traversal is forbidden')
+    current = root
+    for part in parts:
+        current = current / part
+        if current.is_symlink() or not current.resolve().is_relative_to(root):
+            raise RuntimeError('Installer writable paths must remain inside the project without symlinks')
+
+
+def runtime_guard(root: Path, path: Path):
+    """Refuse redirected installer state before reads, writes or stale-lock removal."""
+    if not path.is_relative_to(root / '.exelia-install'):
+        raise RuntimeError('Installer runtime path escapes project state')
+    project_path_guard(root, path)
+
+
 def atomic_json(path: Path, value: dict):
+    state = next((parent for parent in (path, *path.parents) if parent.name == '.exelia-install'), None)
+    if state is not None:
+        runtime_guard(state.parent, path)
     path.parent.mkdir(parents=True, exist_ok=True)
     handle=tempfile.NamedTemporaryFile('w',encoding='utf-8', dir=path.parent,delete=False)
     try:
@@ -59,15 +85,18 @@ def plan_actions(root: Path, manifest: dict, findings: dict, *, optional: bool=F
         if t['id']=='impeccable-cli' and not any(sk['name']=='impeccable' for sk in missing_skills):continue
         method=t.get('install','host-manual')
         if method=='local-npm':
-            cmd=['npm','install','--prefix','.exelia-tools/node','--save-dev','--save-exact',
-                 '--no-audit','--no-fund','--ignore-scripts',t['package']]
+            cmd=['npm','ci','--include=dev','--global=false','--cache','../npm-cache',
+                 '--no-audit','--no-fund','--ignore-scripts']
             actions.append({'id':'local-npm-'+t['id'],'kind':'local-npm','name':t['id'],
                  'reason':info['detail'],'command':cmd,'package':t['package'],
+                 'working_directory':'.exelia-tools/node',
                  'scope':'project','blocked':False})
         elif method in ('local-python','local-python-lib'):
             actions.append({'id':'local-python-'+t['id'],'kind':'local-python','name':t['id'],
                 'reason':info['detail'],
-                'command':['.exelia-tools/python/bin/python','-m','pip','install',t['package']],
+                'command':['.exelia-tools/python/bin/python','-m','pip','--isolated','install','--no-user',
+                           '--prefix','.exelia-tools/python','--cache-dir','.exelia-tools/pip-cache','--require-hashes',
+                           '-r','manifests/tool-dependencies/requirements-'+t['id']+'.txt'],
                 'package':t['package'],'scope':'project','blocked':False})
         else:
             actions.append({'id':'host-prereq-'+t['id'],'kind':'manual','name':t['id'],
@@ -93,7 +122,8 @@ def plan_actions(root: Path, manifest: dict, findings: dict, *, optional: bool=F
         else:
             actions.append({'id':'skill-'+name,'kind':'skill','name':name,'source':skill['source'],
                'reason':'Project skill required (global copies are not used)',
-               'command':['./scripts/local-tool.sh','skills','add',skill['source'],'--skill',name,
+               'command':['./scripts/local-tool.sh','skills','add',
+                          'https://github.com/'+skill['source']+'/tree/'+skill['commit'] if skill.get('commit') else skill['source'],'--skill',name,
                           '-a','codex','-y','--copy'],
                'scope':'project','blocked':False})
     # OpenAI Docs and Context7 are declared in trusted project config; never
@@ -114,11 +144,13 @@ class Session:
         self.state_dir=self.root/'.exelia-install'
         self.journal_file=self.state_dir/'journal.json'
         self.lock_dir=self.state_dir/'lock'
+        runtime_guard(self.root, self.journal_file)
         self.journal=read_json(self.journal_file, {'version':2,'attempts':[],'steps':{},'backups':[]})
         self.logs_dir=self.state_dir/'logs'
 
     @contextlib.contextmanager
     def locked(self):
+        runtime_guard(self.root, self.lock_dir / 'pid')
         self.state_dir.mkdir(exist_ok=True)
         try:
             self.lock_dir.mkdir()
@@ -140,6 +172,7 @@ class Session:
         try:
             yield
         finally:
+            runtime_guard(self.root, self.lock_dir)
             shutil.rmtree(self.lock_dir,ignore_errors=True)
 
     def persist(self):
@@ -156,6 +189,7 @@ class Session:
             original=target.read_bytes()
             bname=str(len(self.journal['backups'])+1)+'-'+sha(relative.encode())[:10]
             folder=self.state_dir/'backups'
+            runtime_guard(self.root, folder / bname)
             folder.mkdir(parents=True,exist_ok=True)
             (folder/bname).write_bytes(original)
             entry={'path':relative,'existed':True,'stored':bname,
@@ -170,6 +204,7 @@ class Session:
         self.persist()
 
     def restore(self) -> list[str]:
+        runtime_guard(self.root, self.journal_file)
         lines=[]
         for entry in reversed(self.journal.get('backups',[])):
             target=self.root/entry['path']
@@ -181,7 +216,9 @@ class Session:
                 lines.append('SKIP changed since install: '+entry['path']);continue
             if entry['existed']:
                 target.parent.mkdir(parents=True,exist_ok=True)
-                shutil.copyfile(self.state_dir/'backups'/entry['stored'],target)
+                source = self.state_dir/'backups'/entry['stored']
+                runtime_guard(self.root, source)
+                shutil.copyfile(source,target)
                 lines.append('RESTORED '+entry['path'])
             elif target.exists():
                 if target.is_file(): target.unlink();lines.append('REMOVED installer-created '+entry['path'])
@@ -191,7 +228,12 @@ class Session:
         return lines
 
     def run_step(self, action: dict) -> dict:
-        self.logs_dir.mkdir(parents=True, exist_ok=True)
+        runtime_guard(self.root, self.logs_dir)
+        self.logs_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        self.logs_dir.chmod(0o700)
+        if action.get('kind') in ('skill', 'skill-playwright'):
+            for folder in ('.agents/skills', '.codex/skills'):
+                project_path_guard(self.root, self.root / folder / action['name'])
         step=action['id']
         cmd=action.get('command')
         if not cmd or action.get('blocked'):
@@ -224,13 +266,24 @@ class Session:
                                       stdin=subprocess.DEVNULL, timeout=timeout, check=False,env=env)
             output=result.stdout+'\n'+result.stderr
             # Safeguard: never write plaintext auth/token output to persistent logs.
-            clean=re.sub(r'(?i)(api[_-]?key|token|secret|password|authorization)(\s*[:=]\s*)\S+',r'\1\2[REDACTED]',output)
-            logfile.write_text(clean[-16000:],encoding='utf-8')
+            clean=redact(output)
+            # Atomic replacement avoids following an existing symlink or modifying a hardlink.
+            handle=tempfile.NamedTemporaryFile('w', encoding='utf-8', dir=self.logs_dir, delete=False)
+            try:
+                with handle:
+                    os.fchmod(handle.fileno(), 0o600)
+                    handle.write(clean[-16000:])
+                os.replace(handle.name, logfile)
+            finally:
+                if os.path.exists(handle.name):
+                    os.unlink(handle.name)
             status='passed' if result.returncode==0 else 'failed'
             record={'status':status,'at':utc(),'exit_code':result.returncode,
                     'log':str(logfile.relative_to(self.root))}
         except subprocess.TimeoutExpired:
             record={'status':'failed','at':utc(),'reason':'command timeout'}
+        except ValueError:
+            record={'status':'failed','at':utc(),'reason':'tool configuration rejected'}
         except OSError as e:
             record={'status':'failed','at':utc(),'reason':type(e).__name__}
         self.journal['steps'][step]=record
@@ -284,7 +337,7 @@ def baseline_commit(root: Path) -> dict:
     # Existing git-checkpoint.sh checks for secrets, file sizes and quality gate.
     try:
         r=subprocess.run(['bash','scripts/git-checkpoint.sh','--starter',
-             'chore: initialize Exelia Ultimate Starter v2'],cwd=root,
+             'chore: initialize Exelia Ultimate Starter v2','--initial'],cwd=root,
              capture_output=True,text=True,timeout=120,check=False)
         return {'status':'passed' if r.returncode==0 else 'failed',
                 'reason':'QA-gated local commit created' if r.returncode==0

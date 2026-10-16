@@ -13,7 +13,7 @@
 | :--- | :--- | :--- |
 | macOS + OrbStack | Preferred, not required on Linux/WSL2 | Local container environment |
 | Python 3.11+ | `python3 --version` | Starter installer |
-| Node.js 20+ and npm | `node --version && npm --version` | Local frontend tools |
+| Node.js 22.20+ and npm | `node --version && npm --version` | Local frontend tools |
 | Git | `git --version` | First local checkpoint |
 | Codex CLI | `codex --version` | Agent workflow |
 | Docker engine / OrbStack | `docker info` | Runtime for applicable projects |
@@ -140,7 +140,7 @@ From the project folder, start Codex and paste [`CONTINUE_PROJECT.md`](CONTINUE_
 
 ## Step 6 / After approval: enable only relevant tools
 
-A fresh 2.1 starter installs **core skills only**. Once discovery and the documentation approval are complete, record the selected stack and any required `capabilities.visual_qa` / `capabilities.security_review` flags in `project.config.json` and run:
+A fresh 2.1.1 starter installs **core skills only**. Once discovery and the documentation approval are complete, record the selected stack and any required `capabilities.visual_qa` / `capabilities.security_review` flags in `project.config.json` and run:
 
 ```bash
 python3 -m exelia capabilities plan --qa --security
@@ -151,3 +151,7 @@ python3 -m exelia dispatch plan
 ```
 
 The capability lock records local file hashes, not upstream source attestations. See [Automation](docs/automation/README.md) for worktrees, quality gates, visual QA and evaluations. To create a new project from GitHub, prefer [Use this template](docs/GITHUB_SETUP.md).
+
+## 2.1.1 candidate verification
+
+Read the [release audit](docs/audits/REMEDIATION_2.1.1.md) before relying on release readiness. The standalone source archive excludes installed tools, downloaded skills and runtime reports; run installation planning again in its new directory. Host prerequisites remain user-managed. Offline fixture tests do not prove network downloads, MCP authentication or real desktop/mobile browser operation. Dependency pinning limitations are documented in the audit and [security policy](SECURITY.md).

@@ -10,20 +10,16 @@ if [[ ! "$msg" =~ ^(feat|fix|docs|test|refactor|perf|chore|build|ci|revert)(\([a
  echo 'Commit message must follow Conventional Commits, e.g. feat(auth): add login.' >&2;exit 2
 fi
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1;then echo 'No local git repo. Run bootstrap first.' >&2;exit 2;fi
+shift 2
+python3 scripts/checkpoint.py "$@"
+checkpoint_tree="$(git write-tree)"
+checkpoint_head="$(git rev-parse --verify HEAD 2>/dev/null || true)"
 ./scripts/quality-gate.sh "$mode"
-git add -A
+if [[ "$(git write-tree)" != "$checkpoint_tree" || "$(git rev-parse --verify HEAD 2>/dev/null || true)" != "$checkpoint_head" ]];then
+ echo 'CHECKPOINT BLOCKED: quality gate changed the index or HEAD; review changes.' >&2;exit 10
+fi
+python3 scripts/checkpoint.py --staged
 if git diff --cached --quiet;then echo 'No new changes; no checkpoint commit.';exit 0;fi
-if git diff --cached --name-only | grep -Ev '(^|/)\.env(\.[^/]*)?\.example$' | grep -E '(^|/)(\.env($|\.)|id_rsa|id_ed25519|credentials\.json|service-account[^/]*\.json|.*\.(pem|key|p12|pfx)$)' ;then
- echo 'REFUSED: possible credential file staged. Unstage and rotate exposed secrets.' >&2;exit 6
-fi
-if git grep --cached -n -I -E -- '(-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----|ghp_[A-Za-z0-9]{20}|github_pat_[A-Za-z0-9_]{15})' >/dev/null 2>&1;then
- echo 'REFUSED: possible private key/token text staged; review before commit.' >&2;exit 7
-fi
-while IFS= read -r -d '' path;do
- [[ -f "$path" ]] || continue
- size=$(wc -c < "$path" | tr -d ' ')
- if (( size > 10485760 ));then echo "REFUSED: staged file >10MiB: $path" >&2;exit 8;fi
-done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 # Keep the exact Git diagnostic visible; vendor-specific exceptions live in .gitattributes.
 if ! git diff --cached --check; then
   echo 'CHECKPOINT BLOCKED: Git whitespace validation failed (paths/lines shown above).' >&2
