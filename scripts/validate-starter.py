@@ -45,8 +45,8 @@ def validate():
   except Exception as e:error('invalid JSON '+f+str(e))
  try:
   manifest=json.loads((ROOT/'manifests/components.json').read_text())
-  if manifest.get('version')!='2.1.1':error('installer manifest version mismatch')
-  if (ROOT/'VERSION').read_text().strip()!='2.1.1':error('VERSION mismatch')
+  if manifest.get('version')!='2.1.2':error('installer manifest version mismatch')
+  if (ROOT/'VERSION').read_text().strip()!='2.1.2':error('VERSION mismatch')
   if len(manifest['skills'])<10:error('too few external skills in manifest')
   names=[x['name'] for x in manifest['skills']]
   if len(names)!=len(set(names)):error('duplicate external skill names')

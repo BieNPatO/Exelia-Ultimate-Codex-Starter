@@ -4,16 +4,23 @@
 Never downloads dependencies, never touches user directories, never invokes
 host-level package installation. Verifies the real quality-gated Git baseline.
 """
-import hashlib,json,os,pathlib,shutil,subprocess,tempfile
+import hashlib,json,os,pathlib,shutil,sys,tempfile
 ROOT=pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from installer.processes import run_group, timeout_budget
 
 def write_bin(p,body):
     p.parent.mkdir(parents=True,exist_ok=True)
     p.write_text('#!/usr/bin/env bash\nset -euo pipefail\n'+body+'\n')
     p.chmod(0o755)
 
-def run(cmd,cwd,env,timeout=210):
-    return subprocess.run(cmd,cwd=cwd,env=env,capture_output=True,text=True,timeout=timeout)
+def write_node_fixture(fake):
+    # Offline fixtures simulate prerequisites; real installs still inspect the real host.
+    write_bin(fake/'node', r'''if [[ "${1:-}" == --version ]];then echo "v${EXELIA_MOCK_NODE_VERSION:-22.20.0}";else echo 'Fixture node only supports --version' >&2;exit 8;fi''')
+
+def run(cmd,cwd,env,timeout=None):
+    budget = timeout if timeout is not None else timeout_budget('EXELIA_SMOKE_TIMEOUT', 1800)
+    return run_group(cmd,cwd=cwd,env=env,timeout=budget,interrupt_first=True)
 
 def main():
   with tempfile.TemporaryDirectory(prefix='exelia_local_scope_') as td:
@@ -39,12 +46,25 @@ def main():
              'blockers': [], 'updated_at': None}
     (repo / 'tasks/STATE.json').write_text(json.dumps(state, indent=2) + '\n')
     (repo / 'tasks/backlog.json').write_text(json.dumps({'schema_version': 1, 'tasks': []}) + '\n')
+    recovery = os.environ.get('EXELIA_SMOKE_TIMEOUT_RECOVERY') == '1'
+    if recovery:
+        gate = repo / 'scripts/quality-gate.sh'
+        original = gate.read_text()
+        # A disposable fixture delay precedes the unchanged full quality gate.
+        original = original.replace('set -euo pipefail', '''set -euo pipefail
+if [[ "${EXELIA_SMOKE_RECOVERY_DELAY:-}" == 1 ]]; then
+  mkdir -p .exelia-install
+  touch .exelia-install/slow-gate-attempted
+  sleep 3
+fi''', 1)
+        gate.write_text(original)
     # Rebuild the exact fixture source inventory before adding mocked runtimes.
     files = sorted(p for p in repo.rglob('*') if p.is_file() and p.name != 'MANIFEST.sha256')
     (repo / 'MANIFEST.sha256').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest() + '  ' +
         p.relative_to(repo).as_posix() + '\n' for p in files))
     fake=base/'bin';fake.mkdir();log=base/'executed.txt'
     flag=base/'ponytail-global-command-was-called'
+    write_node_fixture(fake)
     write_bin(fake/'codex',r'''
 case "${1:-}" in
  --version) echo 'codex-cli 0.162.1';;
@@ -132,7 +152,19 @@ exit 4
     assert all(x['scope']=='project' for x in obj['plan'] if not x['blocked'])
     assert not (repo/'.git').exists()
     assert not (repo/'.exelia-install').exists()
-    p=run(['bash','install.sh','--apply','--yes','--git-name','Exelia Test','--git-email','test@exelia.invalid'],repo,env)
+    apply_args = ['bash','install.sh','--apply','--yes','--git-name','Exelia Test','--git-email','test@exelia.invalid']
+    if recovery:
+        interrupted_env = {**env, 'EXELIA_CHECKPOINT_TIMEOUT': '1', 'EXELIA_SMOKE_RECOVERY_DELAY': '1'}
+        failed = run(apply_args, repo, interrupted_env)
+        assert failed.returncode != 0, 'Timeout unexpectedly reported installation success'
+        report = json.loads((repo / '.exelia-install/report.json').read_text())
+        assert report['git_checkpoint']['status'] == 'failed', report['git_checkpoint']
+        assert 'timed out' in report['git_checkpoint']['reason'], report['git_checkpoint']
+        assert run(['git','rev-parse','--verify','HEAD'],repo,env).returncode != 0
+        assert not (repo / '.exelia-install/lock').exists()
+        p=run(['bash','install.sh','--resume','--yes'],repo,env)
+    else:
+        p=run(apply_args,repo,env)
     if p.returncode:
         report_path=repo/'.exelia-install/report.json'
         if report_path.exists():
@@ -178,5 +210,9 @@ exit 4
     print('PASS: project-local tools, all skills including Ponytail, and Git initial commit')
     print('PASS: no global npm/skills/plugins, no host modifications, idempotent resume')
     print('PASS: all downloads mocked; no network or credentials used')
+    if recovery:
+        journal = json.loads((repo / '.exelia-install/journal.json').read_text())
+        assert [item['mode'] for item in journal['attempts'][:2]] == ['apply', 'resume']
+        print('PASS: actual checkpoint timeout failed without commit; installer resume passed the full quality gate')
 
 if __name__=='__main__':main()

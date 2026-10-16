@@ -30,10 +30,11 @@ def _managed_directory(root: Path, directory: Path, *, venv: bool = False) -> No
     for entry in directory.rglob('*'):
         if not entry.is_symlink():
             continue
-        # venv uses read-only links to the host interpreter; its libraries/cache stay local.
+        # Nested venvs link to the trusted base interpreter, even from a copied outer venv.
         interpreter = (venv and entry.parent == directory / ('Scripts' if sys.platform == 'win32' else 'bin')
                        and re.fullmatch(r'(?:python(?:\d+(?:\.\d+)?)?(?:\.exe)?|𝜋thon)', entry.name)
-                       and entry.resolve() == Path(sys.executable).resolve())
+                       and entry.resolve() in {Path(sys.executable).resolve(),
+                                               Path(getattr(sys, '_base_executable', sys.executable)).resolve()})
         if interpreter:
             continue
         contained_lib64 = venv and entry.name == 'lib64' and entry.parent == directory and entry.resolve() == directory / 'lib'

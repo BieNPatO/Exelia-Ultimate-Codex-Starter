@@ -1,0 +1,513 @@
+{
+  "schema_version": 1,
+  "release_version": "2.1.2",
+  "release_type": "Compatibility & CI Reliability Release Candidate",
+  "audit_date": "2026-10-16",
+  "baseline_revision": "a205d5cbee70ae3b877c26c5d88deb7ebbf5f97b",
+  "baseline_worktree": "clean",
+  "original_independent_report": "Not found in checked local repository/Desktop/Downloads paths; user-supplied I01-I04 are authoritative.",
+  "status": "SOURCE_VERIFIED_AWAITING_FINAL_ARCHIVE_VERIFICATION",
+  "findings": [
+    {
+      "id": "I-01",
+      "status": "FIXED",
+      "files": [
+        "installer/localtools.py",
+        "tests/test_compatibility_venv.py"
+      ],
+      "root_cause": "Interpreter exception compared only sys.executable; external copies venv uses a distinct trusted base executable.",
+      "changes": "Accept runtime-provided sys._base_executable as an additional read-only interpreter target, retaining confined writable directories/caches and restricted interpreter aliases. pyvenv.cfg cannot confer trust.",
+      "regression": "Actual offline pip installs and repeat installs from system and external copies/symlinks venvs; unknown interpreter and writable directory links rejected.",
+      "residual_limit": "Native Windows remains unsupported; tested interpreter/platform versions are listed separately."
+    },
+    {
+      "id": "I-02",
+      "status": "FIXED",
+      "files": [
+        "tests/integration_smoke.py",
+        "tests/test_compatibility_installation.py"
+      ],
+      "root_cause": "Fixture replaced npm/npx but inherited real host node binary.",
+      "changes": "Explicit simulated Node22.20.0 default shadows host; compliant and22.16.0 noncompliant scenarios use real installer CLI. Real manifest minimum22.20 is unchanged.",
+      "regression": "Host node sentinel cannot execute; actual CLI reports ready vs incompatible; clean and installed-state integration/resume.",
+      "residual_limit": "Offline fixtures are simulated host prerequisite evidence; real installation still needs compliant host Node."
+    },
+    {
+      "id": "I-03",
+      "status": "FIXED",
+      "files": [
+        "installer/engine.py",
+        "installer/processes.py",
+        "tests/integration_smoke.py",
+        "tests/test_compatibility_installation.py"
+      ],
+      "root_cause": "Fixed120-second initial checkpoint timeout was too short for full QA; killing only parent shell could leave committing children.",
+      "changes": "Checkpoint900s and smoke1800s defaults, explicit1..7200s budgets; process-group timeout/interruption cleanup with bounded drain/reap, signal policy restored; actual timeout/resume checks retain all QA.",
+      "regression": "Slow runner, real timeout/no delayed commit, retry success, nested outer timeout, SIGINT/SIGTERM, detached pipe drain, invalid budget refusals.",
+      "residual_limit": "SIGKILL cannot be caught; a malicious process can detach into a separate session. This is supervised local execution, not OS security isolation."
+    },
+    {
+      "id": "I-04",
+      "status": "FIXED",
+      "files": [
+        "scripts/check-publication.py",
+        "tests/test_compatibility_publication.py"
+      ],
+      "root_cause": "No-Git export walked generated __pycache__ as release content after ordinary Python execution.",
+      "changes": "Manifest-backed source exports validate source hashes and permit only unlisted current-interpreter bytecode with exact compile/marshal equivalence to unchanged hash-verified inventoried source; never unmarshal or execute caches. Actual ZIP --archive scan inspects every member and rejects runtime artifacts regardless of source-cache exception.",
+      "regression": "Clean and post-test exports; tracked/inventoried/archived bytecode and nested secrets rejected; altered/missing inventory sources, symlinks/traversal and corrupt ZIP fail.",
+      "residual_limit": "Inventory is not authenticated supplier provenance; heuristics cannot certify secret absence."
+    }
+  ],
+  "checks": [
+    {
+      "label": "clean-gate",
+      "command": [
+        "env",
+        "-u",
+        "PYTHONDONTWRITEBYTECODE",
+        "bash",
+        "scripts/quality-gate.sh",
+        "--starter"
+      ],
+      "exit_code": 0,
+      "seconds": 53.178,
+      "outcome": "PASS",
+      "test_methods": 139
+    },
+    {
+      "label": "clean-gitleaks",
+      "command": [
+        "gitleaks",
+        "dir",
+        "--redact",
+        "--no-banner",
+        "--report-format",
+        "json",
+        "--report-path",
+        "<temporary-report>",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 0.816,
+      "outcome": "PASS"
+    },
+    {
+      "label": "clean-integration",
+      "command": [
+        "env",
+        "EXELIA_SMOKE_TIMEOUT_RECOVERY=1",
+        "python3",
+        "tests/integration_smoke.py"
+      ],
+      "exit_code": 0,
+      "seconds": 62.278,
+      "outcome": "PASS"
+    },
+    {
+      "label": "clean-publication",
+      "command": [
+        "python3",
+        "scripts/check-publication.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.783,
+      "outcome": "PASS"
+    },
+    {
+      "label": "clean-rerun-gate",
+      "command": [
+        "env",
+        "-u",
+        "PYTHONDONTWRITEBYTECODE",
+        "bash",
+        "scripts/quality-gate.sh",
+        "--starter"
+      ],
+      "exit_code": 0,
+      "seconds": 47.182,
+      "outcome": "PASS",
+      "test_methods": 140
+    },
+    {
+      "label": "clean-rerun-integration",
+      "command": [
+        "env",
+        "EXELIA_SMOKE_TIMEOUT_RECOVERY=1",
+        "python3",
+        "tests/integration_smoke.py"
+      ],
+      "exit_code": 0,
+      "seconds": 57.988,
+      "outcome": "PASS"
+    },
+    {
+      "label": "current-publication",
+      "command": [
+        "python3",
+        "scripts/check-publication.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.86,
+      "outcome": "PASS"
+    },
+    {
+      "label": "history-gitleaks",
+      "command": [
+        "gitleaks",
+        "git",
+        "--redact",
+        "--no-banner",
+        "--report-format",
+        "json",
+        "--report-path",
+        "<temporary-report>",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 0.78,
+      "outcome": "PASS"
+    },
+    {
+      "label": "host-final-gate",
+      "command": [
+        "bash",
+        "scripts/quality-gate.sh",
+        "--starter"
+      ],
+      "exit_code": 0,
+      "seconds": 49.608,
+      "outcome": "PASS",
+      "test_methods": 139
+    },
+    {
+      "label": "host-installed-smoke",
+      "command": [
+        "env",
+        "EXELIA_SMOKE_TIMEOUT_RECOVERY=1",
+        "python3",
+        "tests/integration_smoke.py"
+      ],
+      "exit_code": 0,
+      "seconds": 58.961,
+      "outcome": "PASS"
+    },
+    {
+      "label": "host-remediation",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_remediation_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 10.889,
+      "outcome": "PASS",
+      "test_methods": 57
+    },
+    {
+      "label": "host-unit",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 47.706,
+      "outcome": "PASS",
+      "test_methods": 136
+    },
+    {
+      "label": "linux-live",
+      "command": [
+        "docker run --rm --network none --read-only --tmpfs /tmp:rw,nosuid,exec (bounded resources, no mounts)",
+        "full unittest; timeout/recovery integration; publication"
+      ],
+      "exit_code": 0,
+      "seconds": 62.333,
+      "outcome": "PASS",
+      "test_methods": 136
+    },
+    {
+      "label": "linux-live",
+      "command": [
+        "docker run --rm --network none --read-only --tmpfs /tmp:rw,nosuid,exec (bounded resources, no mounts)",
+        "full unittest; timeout/recovery integration; publication"
+      ],
+      "exit_code": 1,
+      "seconds": 23.271,
+      "outcome": "FAIL",
+      "test_methods": 136
+    },
+    {
+      "label": "linux-live",
+      "command": [
+        "docker run --rm --network none --read-only --tmpfs /tmp:rw,nosuid,exec (bounded resources, no mounts)",
+        "full unittest; timeout/recovery integration; publication"
+      ],
+      "exit_code": 2,
+      "seconds": 0.542,
+      "outcome": "FAIL"
+    },
+    {
+      "label": "linux-live",
+      "command": [
+        "docker run --rm --network none --read-only --tmpfs /tmp:rw,nosuid,exec (bounded resources, no mounts)",
+        "full unittest; timeout/recovery integration; publication"
+      ],
+      "exit_code": 2,
+      "seconds": 0.289,
+      "outcome": "FAIL"
+    },
+    {
+      "label": "linux-live",
+      "command": [
+        "docker run --rm --network none --read-only --tmpfs /tmp:rw,nosuid,exec (bounded resources, no mounts)",
+        "full unittest; timeout/recovery integration; publication"
+      ],
+      "exit_code": 0,
+      "seconds": 72.112,
+      "outcome": "PASS",
+      "test_methods": 140
+    },
+    {
+      "label": "post-test-publication",
+      "command": [
+        "python3",
+        "scripts/check-publication.py"
+      ],
+      "exit_code": 1,
+      "seconds": 0.48,
+      "outcome": "FAIL"
+    },
+    {
+      "label": "post-test-rerun",
+      "command": [
+        "python3",
+        "scripts/check-publication.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.62,
+      "outcome": "PASS"
+    },
+    {
+      "label": "provenance-licenses",
+      "command": [
+        "python3",
+        "-c",
+        "from pathlib import Path; import json,hashlib,subprocess; root=Path.cwd(); v=json.loads(Path('manifests/dependency-provenance.json').read_text()); [(lambda x: (None if hashlib.sha256(Path(x['lockfile']).read_bytes()).hexdigest()==x['sha256'] else (_ for _ in ()).throw(AssertionError(x['lockfile']))))(x) for x in v['npm'].values()]; [(_ for _ in ()).throw(AssertionError(name)) for name in ('LICENSE','rich-LICENSE.txt','markdown-it-py-LICENSE.txt','mdurl-LICENSE.txt','Pygments-LICENSE.txt') if not (Path(name) if name=='LICENSE' else Path('installer/_vendor/licenses')/name).is_file()]; [(_ for _ in ()).throw(AssertionError(p)) for p in ('manifests/tool-dependencies/core/package.json','manifests/tool-dependencies/core/package-lock.json','manifests/tool-dependencies/web/package.json','manifests/tool-dependencies/web/package-lock.json','manifests/tool-dependencies/requirements-uv.txt','manifests/tool-dependencies/requirements-ruff.txt') if Path(p).read_bytes()!=subprocess.check_output(['git','show','a205d5c:'+p])]; print('PASS: original locks and registry hashes unchanged; thirdparty license notices retained')"
+      ],
+      "exit_code": 0,
+      "seconds": 0.07,
+      "outcome": "PASS"
+    },
+    {
+      "label": "syntax",
+      "command": [
+        "python3",
+        "-c",
+        "from pathlib import Path; import subprocess; fs=[p for d in ('exelia','installer','scripts','tests') for p in Path(d).glob('*.py')]; [compile(p.read_text(),str(p),'exec') for p in fs]; sh=[Path('install.sh'),*Path('scripts').glob('*.sh')]; [subprocess.run(['bash','-n',str(p)],check=True) for p in sh]; print(len(fs),'Python files compiled in memory;',len(sh),'shell scripts parsed')"
+      ],
+      "exit_code": 0,
+      "seconds": 0.096,
+      "outcome": "PASS"
+    }
+  ],
+  "independent_reviews": {
+    "code": {
+      "reviewer": "/root/final_code_review",
+      "outcome": "PASS",
+      "outstanding_findings": [],
+      "resolved_finding": "SIGTERM late-commit blocker independently reproduced, fixed and retested",
+      "implementation_snapshot_sha256": "311276bffbcd25952207677b35da26fcc0344a84d8c33990714f7757891abe6b",
+      "snapshot_algorithm": "SHA256 of compact sorted JSON path-to-content-SHA256 map",
+      "implementation_file_hashes": {
+        "installer/__init__.py": "522b817115cfb57c4f5010dda74643bd697453d0dbd6430d7d3de801f871a8b8",
+        "installer/cli.py": "bd78d8009f44787f10b70c20aca5bb298ec879017f6fdd44212a33e98b67740b",
+        "installer/engine.py": "930d6b22118a491a234bdccc13281ace67ac69afbdde5481b05e876bb1bf8270",
+        "installer/localtools.py": "0d6496c078c0652da91ca2b872753eef1b1c134e6d210036912ebe3bc71e3397",
+        "installer/processes.py": "f4f7a407e6f72edcf004d4328e9739a6e3febc74f5e2d02fd912fd3139332d3e",
+        "scripts/check-publication.py": "94c49f00dd216fdbed06e2f2ffbb167a72f4dda674af3546eef719a25a3f9ab6",
+        "scripts/validate-starter.py": "19ba094d3352522afa28ebc6d0cafea55f79d0d62b278c96e51ad7092c60da23",
+        "tests/integration_smoke.py": "aa056c12914349ec83971078b8346e47f4fd05160b56d80865f34995c663dfa5",
+        "tests/test_compatibility_installation.py": "547d458f23d970f4353116aeb44e1df6c9c7af89b119b7beea5abf68136eff51",
+        "tests/test_compatibility_publication.py": "a5a5cf83fb31d1b66423fe3571ff0eed2e772a8e2fa411625a0c37c8974360ad",
+        "tests/test_compatibility_venv.py": "a968ba4d179ece98fad4519570b294ddf824247baa3655f22270c730137d7360"
+      }
+    },
+    "security": {
+      "reviewer": "/root/final_security_review",
+      "outcome": "PASS",
+      "outstanding_findings": [],
+      "resolved_finding": "SIGTERM late-commit blocker independently reproduced, fixed and retested",
+      "implementation_snapshot_sha256": "311276bffbcd25952207677b35da26fcc0344a84d8c33990714f7757891abe6b",
+      "snapshot_algorithm": "SHA256 of compact sorted JSON path-to-content-SHA256 map",
+      "implementation_file_hashes": {
+        "installer/__init__.py": "522b817115cfb57c4f5010dda74643bd697453d0dbd6430d7d3de801f871a8b8",
+        "installer/cli.py": "bd78d8009f44787f10b70c20aca5bb298ec879017f6fdd44212a33e98b67740b",
+        "installer/engine.py": "930d6b22118a491a234bdccc13281ace67ac69afbdde5481b05e876bb1bf8270",
+        "installer/localtools.py": "0d6496c078c0652da91ca2b872753eef1b1c134e6d210036912ebe3bc71e3397",
+        "installer/processes.py": "f4f7a407e6f72edcf004d4328e9739a6e3febc74f5e2d02fd912fd3139332d3e",
+        "scripts/check-publication.py": "94c49f00dd216fdbed06e2f2ffbb167a72f4dda674af3546eef719a25a3f9ab6",
+        "scripts/validate-starter.py": "19ba094d3352522afa28ebc6d0cafea55f79d0d62b278c96e51ad7092c60da23",
+        "tests/integration_smoke.py": "aa056c12914349ec83971078b8346e47f4fd05160b56d80865f34995c663dfa5",
+        "tests/test_compatibility_installation.py": "547d458f23d970f4353116aeb44e1df6c9c7af89b119b7beea5abf68136eff51",
+        "tests/test_compatibility_publication.py": "a5a5cf83fb31d1b66423fe3571ff0eed2e772a8e2fa411625a0c37c8974360ad",
+        "tests/test_compatibility_venv.py": "a968ba4d179ece98fad4519570b294ddf824247baa3655f22270c730137d7360"
+      }
+    }
+  },
+  "agent_execution": [
+    {
+      "task": "compat_venv",
+      "role": "backend_engineer",
+      "scope": "I01 implementation"
+    },
+    {
+      "task": "compat_devops",
+      "role": "devops_engineer",
+      "scope": "I02/I03 implementation and reviewer correction"
+    },
+    {
+      "task": "compat_publication",
+      "role": "qa_engineer",
+      "scope": "I04 implementation"
+    },
+    {
+      "task": "compat_docs",
+      "role": "documentation_agent",
+      "scope": "Documentation and CI matrix"
+    },
+    {
+      "task": "compat_code_review",
+      "role": "code_reviewer",
+      "scope": "Independent final full diff review"
+    },
+    {
+      "task": "compat_security_review",
+      "role": "security_auditor",
+      "scope": "Independent final security review"
+    }
+  ],
+  "model_routing": {
+    "recommendation": "current configured Codex model; high effort implementation/review, medium/low bounded QA/docs",
+    "actual_model_switch_verified": false
+  },
+  "historical_findings": {
+    "F01-F11,F13-F15": "Retained implementations and full historical regression suites are rerun; original2.1.1 reports remain unchanged.",
+    "F12": "PARTIAL: supplier/advisory/legal/all-platform dependency audit incomplete. Exact locks/hashes/revisions retained.",
+    "F16": "PARTIAL: reviewed image digests and live infrastructure compatibility remain project-specific; no services started.",
+    "reports": [
+      "docs/audits/REMEDIATION_2.1.1.md",
+      "docs/audits/REMEDIATION_2.1.1.json"
+    ]
+  },
+  "timeout_policy": {
+    "EXELIA_CHECKPOINT_TIMEOUT": {
+      "default_seconds": 900,
+      "range": "1..7200",
+      "scope": "Initial full-QA Git checkpoint"
+    },
+    "EXELIA_SMOKE_TIMEOUT": {
+      "default_seconds": 1800,
+      "range": "1..7200",
+      "scope": "Offline fixture installer call"
+    },
+    "other_deadlines": "Probe9s/docker7s; structure20/30s; platform4/5s; venv100s; ordinary action90s; dependency installation600s remain bounded and separate.",
+    "cleanup_limit": "SIGKILL and malicious independently detached sessions cannot be guaranteed by Python cleanup."
+  },
+  "platforms": {
+    "macOS": "Actual host arm64 Python3.14.8; system/external venv copies/symlinks actual offline pip operations.",
+    "Linux": "PASS: actual ephemeral Ubuntu24.04 arm64 container, Python3.12.3, Node24.20.0, Git2.43.0;140/140 tests plus actual timeout/resume integration and publication; no network or host mounts.",
+    "CI": "Configured Ubuntu24.04 Python3.11/3.12/3.14 matrix; hosted execution NOT_TESTED.",
+    "Windows": "Native Windows NOT_SUPPORTED; WSL behavior needs separate target execution."
+  },
+  "safety": {
+    "discovery_approval_changed": false,
+    "global_installations": false,
+    "global_codex_changes": false,
+    "remote_push_deploy": false,
+    "user_files_deleted": false,
+    "container_test": "Task-specific image only; no network during tests; no bind mounts/sockets; ephemeral limited containers."
+  },
+  "release_packaging": {
+    "status": "PENDING",
+    "provenance": "This source report precedes its own final release commit/archive. External Exelia-Ultimate-Codex-Starter-v2.1.2-MANIFEST.json and AUDIT_REPORT.md identify exact commit, SHA256, final extracted-ZIP checks and readiness. No uncommitted source is packaged."
+  },
+  "limitations": [
+    "No hosted GitHub Actions/settings/template flag tested; no remote changed.",
+    "Supplier code/advisory/legal audits and all optional dependency installations remain incomplete.",
+    "No new live product/browser E2E; historical2.1.1 synthetic Chromium evidence is not repeated or claimed current.",
+    "Linux Python3.11 and3.14 hosted matrix not executed unless separately recorded.",
+    "No production or infrastructure services started.",
+    "Raw local runtime logs remain outside distribution; public command summaries contain no host credentials or user data."
+  ],
+  "test_summary": {
+    "source_host": {
+      "command": "bash scripts/quality-gate.sh --starter",
+      "exit_code": 0,
+      "test_methods": 140,
+      "passed": 140
+    },
+    "new_compatibility_methods": 29,
+    "historical_remediation_methods": 57,
+    "Linux": {
+      "command": "python3 -m unittest discover -s tests -v; EXELIA_SMOKE_TIMEOUT_RECOVERY=1 python3 tests/integration_smoke.py; python3 scripts/check-publication.py",
+      "exit_code": 0,
+      "test_methods": 140,
+      "passed": 140
+    },
+    "installed_host_smoke": {
+      "exit_code": 0,
+      "actual_initial_timeout_failed_without_commit": true,
+      "resume_full_gate": "PASS",
+      "repeated_resume_no_downloads": "PASS"
+    },
+    "count_semantics": "140 is per full run; does not add repeated runs or nested fixture tests.29 compatibility and57 remediation are subsets."
+  },
+  "regression_reproductions": {
+    "I01": {
+      "outcome_before_fix": "FAIL",
+      "actual_external_copies_venv_failure": true,
+      "evidence": "Backend red/green actual offline synthetic wheel installs from system and copies/symlinks external interpreters"
+    },
+    "I02_I03": {
+      "baseline_test_exit_code": 1,
+      "failed_subcases": 7,
+      "errors": 2,
+      "evidence": "DevOps baseline lacked deterministic Node fixture/process supervisor; actual slow deadline and resume fixtures retained"
+    },
+    "I04": {
+      "baseline_test_exit_code": 1,
+      "methods": 10,
+      "failures": 5,
+      "evidence": "CLI post-test export failed; archive argument was not enforced; full-gate cache token false positives reproduced and corrected; permanent thirteen-method suite now green"
+    },
+    "review_SIGTERM": {
+      "original_parent_exit_code": -15,
+      "original_late_commit_created": true,
+      "corrected_parent_exit_code": 143,
+      "corrected_late_commit_created": false,
+      "retry": "PASS actual commit after full successful fixture QA"
+    },
+    "Linux_harness": {
+      "initial_base_venv_exit_code": 1,
+      "reason": "Base image lacked ensurepip; explicit task image installed python3.12-venv.",
+      "intermediate_failures_preserved": [
+        "tar ownership with dropped capabilities",
+        "tar option syntax",
+        "tmpfs noexec blocked test executables"
+      ],
+      "final_outcome": "PASS; corrected test harness, no product guard relaxed"
+    }
+  }
+}

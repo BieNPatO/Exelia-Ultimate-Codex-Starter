@@ -25,7 +25,7 @@ F12 remains PARTIAL: full supplier, advisory, licensing and all-platform verific
 
 GitHub Actions use full source commit SHAs. Optional development services require operator-supplied reviewed image digests through `POSTGRES_DIGEST`, `REDIS_DIGEST`, `MAILPIT_DIGEST` and `MINIO_DIGEST`; no default digest is claimed verified. F16 remains PARTIAL until the selected images, permissions, volumes and healthchecks are tested. Ports bind to localhost and passwords must be development-only. No service startup is implied by configuration validation.
 
-## 2.1.1 release controls and limits
+## Release controls and limits
 
 Checkpoint, integration and publication checks share sensitive-filename protection at every directory depth. Non-secret `.env.example` templates may be allowed; real `.env` variants, private keys and recognized credential artifacts remain protected. Installer logs redact common authorization, token, API-key, password and environment formats and use restrictive local permissions. Redaction is best effort: do not collect real authentication output unnecessarily, and inspect logs before sharing.
 
@@ -35,4 +35,12 @@ Task review requires an independent identifier, PASS result, exact commit, times
 
 ## Support and publication status
 
-Version 2.1.1 is a release candidate for separate final audit. No public GitHub publication, branch protection, vulnerability-reporting setting or hosted CI result is implied by local checks. Platform, network-download, dependency provenance and live-browser limitations are listed in the release audit. Report unknowns rather than treating a configured integration as verified.
+Version 2.1.2 is a release candidate requiring separate final audit; consult the [compatibility audit](docs/audits/COMPATIBILITY_2.1.2.md) for current verification. No public GitHub publication, branch protection, vulnerability-reporting setting or hosted CI result is implied by local checks. Platform, network-download, dependency provenance and live-browser limitations are listed in the release audit. Report unknowns rather than treating a configured integration as verified.
+
+## Compatibility safeguards
+
+Project-local writable directories, caches, packages and executable destinations remain confined. A venv's Python interpreter link may resolve to the current interpreter or its trusted base interpreter; this read-only execution exception does not permit redirecting installation targets. It is not protection against a hostile same-user process racing filesystem checks.
+
+Publication checks use tracked source in Git and validate an export's `MANIFEST.sha256` inventory. Only current-interpreter bytecode whose payload exactly matches compilation of an unchanged inventoried Python source may be treated as incidental post-test output. These compiler-verified caches are excluded from source secret scanning because they are generated output; inventoried source remains scanned. Unknown or modified cache payloads are rejected. This exception never applies to release ZIP members: run `python3 scripts/check-publication.py --archive /path/to/release.zip` to inspect actual contents. Runtime files, secrets, unsafe paths and symlinks remain prohibited in archives. Inventory hashes and pattern matching do not authenticate the supplier or prove absence of secrets.
+
+Release verification should set `PYTHONDONTWRITEBYTECODE=1`. A timed-out initial checkpoint fails and its process group is terminated; it cannot be treated as approved QA evidence. Resume retries the gate rather than approving unfinished tests. See [timeout settings](docs/installer/TROUBLESHOOTING.md#checkpoint-and-integration-timeouts).

@@ -8,7 +8,7 @@
 6. Ponytail is a project skill, with AGENTS.md routing, but has NO global plugin hooks or persistent slash-command mode. This restriction is deliberate.
 7. `.codex/config.toml` owns the project MCP servers. Authentication and live connectivity are independent of configuration presence. Never commit plaintext API keys.
 8. The interactive Impeccable upstream installer may offer multiple scopes; choose only Project. Do not auto-select an unverified CLI argument.
-9. Local npm/pip package caches may still live under HOME (normal ecosystem behavior); no global installed binaries/plugins/skills are touched.
+9. Installer-managed npm/pip caches and package prefixes are project-local; no global installed binaries/plugins/skills are touched.
 10. `approval_policy=on-request` with workspace-write and network disabled is not full host security. An unconstrained Docker socket grants broad host privileges. Avoid host root mounts and real production credentials.
 11. Installer command output logs are stored under ignored `.exelia-install/` with restrictive permissions and best-effort redaction of common bearer headers, token/API-key/password fields and environment assignments. Do not collect real credentials for tests; review logs before sharing externally.
 12. Rollback is limited to configuration files backed up before changes; it never uninstalls host software, rewrites Git history or deletes user edits.
@@ -19,4 +19,6 @@ Tool installs use checked-in core/web npm lock profiles (`npm ci`) and hashed Py
 
 ## Managed runtime paths
 
-The installer rejects redirected managed directories, caches, state, logs and skill destinations before writing. Local tool launchers require resolved executable paths inside the managed project prefix. Python installs isolate pip configuration and use explicit local prefix/cache paths; npm explicitly disables global installation. Standard virtual-environment interpreter aliases remain allowed. These checks do not provide process isolation or prevent a hostile same-user process from concurrently changing the filesystem.
+The installer rejects redirected managed directories, caches, state, logs and skill destinations before writing. Local tool launchers require resolved executable paths inside the managed project prefix, except trusted venv Python interpreter links to the running or base interpreter. Python installs isolate pip configuration and use explicit local prefix/cache paths; npm explicitly disables global installation. The interpreter exception is read-only execution; writable directories, package destinations and caches cannot be redirected. These checks do not provide process isolation or prevent a hostile same-user process from concurrently changing the filesystem.
+
+Current compatibility and release-verification evidence is in the [2.1.2 audit](../audits/COMPATIBILITY_2.1.2.md). Historical 2.1.1 evidence remains unchanged.

@@ -11,12 +11,16 @@
   "blockers": [],
   "updated_at": null,
   "starter_release_verification": {
-    "version": "2.1.1",
+    "version": "2.1.2",
     "status": "ready_for_review",
     "quality_gate": "PASS",
-    "unit_test_methods": 111,
-    "evidence": "docs/audits/REMEDIATION_2.1.1.json",
+    "unit_test_methods": 140,
+    "platforms": [
+      "macOS arm64 Python3.14.8",
+      "Linux arm64 Python3.12.3"
+    ],
+    "evidence": "docs/audits/COMPATIBILITY_2.1.2.json",
     "application_gate": "BLOCKED: discovery documentation intentionally unapproved",
-    "note": "Release maintenance authorized separately; product phase and approval fields preserved."
+    "note": "Maintenance release authorization is separate from product discovery approval."
   }
 }

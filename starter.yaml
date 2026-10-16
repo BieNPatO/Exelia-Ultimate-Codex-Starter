@@ -1,6 +1,6 @@
 starter:
   name: exelia-ultimate-codex-starter
-  version: 2.1.1
+  version: 2.1.2
   environment: auto_detect_macos_linux_wsl2
   primary_target: macos_orbstack
   architecture: flexible

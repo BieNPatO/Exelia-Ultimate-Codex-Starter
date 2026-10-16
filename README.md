@@ -17,7 +17,7 @@
 | **Project-local setup** | Skills, Node CLIs and Python tools isolated under the repository |
 | **Repeatable Git delivery** | Local baseline commit, gated checkpoints, no automatic push |
 | **Rich installer** | Bundled Rich interface from first frame, with plain fallback and UI demo |
-| **2.1.1 capability resolver** | Chooses skills from the approved stack; core skills only before discovery |
+| **Capability resolver** | Chooses skills from the approved stack; core skills only before discovery |
 | **Dependency-aware worktrees** | Prepare independent task worktrees, check overlap and integrate only after review |
 | **QA, visual QA and evaluation** | Strict stack-driven test gates, optional Playwright smoke checks, actual agent metrics |
 | **GitHub template preparation** | Publication documentation, license, contributing and local checks; remote approval remains pending |
@@ -175,7 +175,7 @@ python3 -m unittest discover -s tests -v
 python3 tests/integration_smoke.py
 ```
 
-These commands cover starter structure and simulated installation. The [release audit](docs/audits/REMEDIATION_2.1.1.md) separately records real dependency checks, native agent execution and Chromium smoke results against a synthetic local fixture. MCP authentication, product acceptance and destination-platform/runtime checks require their own evidence.
+These commands cover starter structure and offline simulated installation. Source tests simulate Node versions and do not require a compliant host Node; real installation still requires Node 22.20+ and Python 3.11+. The [compatibility audit](docs/audits/COMPATIBILITY_2.1.2.md) records current verification. The historical [2.1.1 audit](docs/audits/REMEDIATION_2.1.1.md) records earlier dependency, agent and synthetic Chromium evidence. MCP authentication, product acceptance and destination-platform/runtime checks require their own evidence.
 
 ## Documentation map
 
@@ -193,9 +193,9 @@ These commands cover starter structure and simulated installation. The [release 
 
 ---
 
-**Version 2.1.1 · Stability & Security Release Candidate.** Rich is bundled locally and used from the first frame; compact dashboards replace repeated lists. No global installations.
+**Version 2.1.2 · Compatibility & CI Reliability Release Candidate.** Rich is bundled locally and used from the first frame; compact dashboards replace repeated lists. No global installations.
 
-## GitHub template workflow (2.1.1)
+## GitHub template workflow (2.1.2)
 
 To publish this starter once, follow [GitHub setup](docs/GITHUB_SETUP.md). For each new app use GitHub **Use this template**, then clone that app's separate repository. Plain cloning the starter directly retains its `origin` and should be used to contribute to the starter itself.
 
@@ -214,4 +214,4 @@ python3 -m exelia eval summary
 
 ## Release candidate status
 
-The 2.1.1 candidate targets the sixteen post-installation findings. See the [remediation audit](docs/audits/REMEDIATION_2.1.1.md) for finding status, actual commands, independent reviews, archive verification and remaining blockers. This document does not grant public release approval. Browser template generation, simulated installation tests and registered agent definitions are distinct from live browser execution, upstream downloads and native agent execution.
+The 2.1.2 candidate addresses virtual-environment compatibility, deterministic offline fixtures, bounded checkpoint timeouts and publication validation after source tests. See the [compatibility audit](docs/audits/COMPATIBILITY_2.1.2.md) for actual commands, independent reviews, archive verification and remaining limitations. The historical [2.1.1 remediation audit](docs/audits/REMEDIATION_2.1.1.md) retains F01–F16 decisions and evidence. This document does not grant public release approval. Browser template generation, simulated installation tests and registered agent definitions are distinct from live browser execution, upstream downloads and native agent execution.

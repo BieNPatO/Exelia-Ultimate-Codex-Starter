@@ -131,3 +131,25 @@ Rollback does **not** remove Git commits, user work, global software or third-pa
 - **Capability drift:** compare selectors, installed names, source records and content hashes. An intentional stack change requires a reviewed refreshed snapshot; unexplained content drift requires investigation.
 
 Actual release checks and limitations are in the [2.1.1 remediation audit](../audits/REMEDIATION_2.1.1.md). Generated browser tests and simulated installation runners are not live execution evidence.
+
+
+## Checkpoint and integration timeouts
+
+| Setting | Default | Allowed values | Scope |
+| --- | --- | --- | --- |
+| `EXELIA_CHECKPOINT_TIMEOUT` | 900 seconds | Integer seconds, 1–7200 | QA-gated initial Git checkpoint |
+| `EXELIA_SMOKE_TIMEOUT` | 1800 seconds | Integer seconds, 1–7200 | Each offline integration subprocess |
+
+The initial checkpoint runs the full starter gate. On slower systems, choose a larger bounded budget before `./install.sh --resume`; no tests are skipped. Ordinary installation commands retain separate step deadlines. Invalid values fail rather than disabling deadlines. Timeout/interruption terminates the subprocess group, records failure and preserves recovery state; a timed-out gate is not successful commit evidence. Inspect `git status --short`, `git log -1` and the installer report before retrying. No user files are deleted.
+
+```bash
+EXELIA_CHECKPOINT_TIMEOUT=1800 ./install.sh --resume
+PYTHONDONTWRITEBYTECODE=1 EXELIA_SMOKE_TIMEOUT=3600 python3 tests/integration_smoke.py
+EXELIA_SMOKE_TIMEOUT_RECOVERY=1 python3 tests/integration_smoke.py
+```
+
+The last command opts into the synthetic real-process timeout/retry scenario; it does not inject a delay into ordinary installation. Offline Node/tool responses are fixtures, not real host-prerequisite evidence. Real installs retain Node 22.20+ enforcement.
+
+For clean-export verification, set `PYTHONDONTWRITEBYTECODE=1`. Inventory-backed exports permit only incidental bytecode whose payload exactly matches compilation of unchanged recorded Python sources after tests; this does not permit bytecode in a ZIP. Always inspect the actual ZIP using `python3 scripts/check-publication.py --archive /path/to/release.zip`. Unknown caches or altered inventory sources remain failures; investigate without deleting user files. See the [2.1.2 compatibility audit](../audits/COMPATIBILITY_2.1.2.md).
+
+The supervised checkpoint runner is supported from the Python main thread, where it temporarily handles SIGTERM and restores the previous handler. Worker-thread calls fail before spawning. SIGKILL cannot be caught, and independently detached hostile sessions are outside this cleanup guarantee; this is not OS sandboxing.

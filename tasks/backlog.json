@@ -136,6 +136,108 @@
           "to": "ready_for_review"
         }
       ]
+    },
+    {
+      "id": "RC212-VENV",
+      "title": "Fix trusted base interpreter compatibility",
+      "owner": "backend_engineer",
+      "scope": "installer/localtools.py,tests/test_compatibility_venv.py",
+      "acceptance": "I01 real system and external venv tests pass; writable paths remain confined",
+      "dependencies": [],
+      "status": "ready_for_review",
+      "evidence": [
+        {
+          "checked_at": "2026-10-16T07:44:16.988789+00:00",
+          "gate": "PASS",
+          "evidence": "docs/audits/COMPATIBILITY_2.1.2.json",
+          "command": "bash scripts/quality-gate.sh --starter; Linux full unittest and actual timeout/resume smoke",
+          "tests": 140,
+          "note": "Source maintenance authorization does not change product documentation approval; final external audit pending."
+        }
+      ],
+      "updated_at": "2026-10-16T07:44:16.901707+00:00",
+      "history": [
+        {
+          "at": "2026-10-16T07:37:37.823583+00:00",
+          "action": "start",
+          "from": "todo",
+          "to": "in_progress"
+        },
+        {
+          "at": "2026-10-16T07:44:16.901642+00:00",
+          "action": "review",
+          "from": "in_progress",
+          "to": "ready_for_review"
+        }
+      ]
+    },
+    {
+      "id": "RC212-INSTALL",
+      "title": "Isolate Node fixture and bound checkpoint process groups",
+      "owner": "devops_engineer",
+      "scope": "installer/engine.py,installer/processes.py,tests/integration_smoke.py,tests/test_compatibility_installation.py",
+      "acceptance": "I02 deterministic versions and I03 real timeout/resume cleanup pass",
+      "dependencies": [],
+      "status": "ready_for_review",
+      "evidence": [
+        {
+          "checked_at": "2026-10-16T07:44:16.988873+00:00",
+          "gate": "PASS",
+          "evidence": "docs/audits/COMPATIBILITY_2.1.2.json",
+          "command": "bash scripts/quality-gate.sh --starter; Linux full unittest and actual timeout/resume smoke",
+          "tests": 140,
+          "note": "Source maintenance authorization does not change product documentation approval; final external audit pending."
+        }
+      ],
+      "updated_at": "2026-10-16T07:44:16.940445+00:00",
+      "history": [
+        {
+          "at": "2026-10-16T07:37:37.902689+00:00",
+          "action": "start",
+          "from": "todo",
+          "to": "in_progress"
+        },
+        {
+          "at": "2026-10-16T07:44:16.940379+00:00",
+          "action": "review",
+          "from": "in_progress",
+          "to": "ready_for_review"
+        }
+      ]
+    },
+    {
+      "id": "RC212-PUBLICATION",
+      "title": "Separate source caches from archived runtime content",
+      "owner": "qa_engineer",
+      "scope": "scripts/check-publication.py,tests/test_compatibility_publication.py",
+      "acceptance": "I04 post-test source export passes while forbidden ZIP members fail",
+      "dependencies": [],
+      "status": "ready_for_review",
+      "evidence": [
+        {
+          "checked_at": "2026-10-16T07:44:16.988875+00:00",
+          "gate": "PASS",
+          "evidence": "docs/audits/COMPATIBILITY_2.1.2.json",
+          "command": "bash scripts/quality-gate.sh --starter; Linux full unittest and actual timeout/resume smoke",
+          "tests": 140,
+          "note": "Source maintenance authorization does not change product documentation approval; final external audit pending."
+        }
+      ],
+      "updated_at": "2026-10-16T07:44:16.983692+00:00",
+      "history": [
+        {
+          "at": "2026-10-16T07:37:37.983229+00:00",
+          "action": "start",
+          "from": "todo",
+          "to": "in_progress"
+        },
+        {
+          "at": "2026-10-16T07:44:16.983616+00:00",
+          "action": "review",
+          "from": "in_progress",
+          "to": "ready_for_review"
+        }
+      ]
     }
   ]
 }

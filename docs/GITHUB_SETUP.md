@@ -7,9 +7,10 @@
 
 1. Make the starter its own empty Git repository. If its installer already initialized local Git, **keep it** — do not delete the `.git` directory.
 2. Review `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `installer/_vendor/licenses`, and `docs/installer/SECURITY.md`.
-3. Review the [2.1.1 candidate audit](audits/REMEDIATION_2.1.1.md), verify the extracted ZIP and checksum, and resolve release blockers. Run the offline checks and verify no actual credentials or business data were added:
+3. Review the [2.1.2 compatibility audit](audits/COMPATIBILITY_2.1.2.md), verify the extracted ZIP and checksum, and resolve release blockers. Run the offline checks and verify no actual credentials or business data were added:
 
    ```bash
+   export PYTHONDONTWRITEBYTECODE=1
    python3 -m unittest discover -s tests -v
    python3 tests/integration_smoke.py
    python3 scripts/check-publication.py
@@ -51,3 +52,8 @@ The candidate ZIP, checksum, standalone audit and manifest must identify the sou
 GitHub Template settings, hosted Actions, branch protection and vulnerability reporting require a real remote and owner action. Mark them `NOT_TESTED` or `BLOCKED` before that exists. This guide grants no permission to create a remote, push, tag publicly or publish a release.
 
 Actions are pinned to full commit SHAs; hosted execution remains a remote-only check. Optional infrastructure requires reviewed image digest variables before Compose configuration can resolve, and selected-image runtime compatibility remains unverified (F16 PARTIAL). Do not use fabricated digests or mutable tags to bypass that requirement.
+
+
+For every release, also run `python3 scripts/check-publication.py --archive /path/to/release.zip` against the actual distribution. The ZIP must reject all forbidden members even when post-test source validation accepts incidental bytecode verified against compilation of unchanged inventoried sources. Keep `MANIFEST.sha256` intact and compare source inventory/hashes to the reviewed commit; never build the ZIP by copying a tested runtime directory. Preserve historical audit documents, but exclude machine-specific runtime evidence.
+
+Offline fixtures simulate compliant and noncompliant Node versions; they do not waive Node 22.20+ for real installation. Linux CI has a Python 3.11/3.12/3.14 matrix with bytecode disabled and a bounded per-job deadline. Only an executed hosted workflow can establish hosted CI compatibility.

@@ -8,6 +8,7 @@ from __future__ import annotations
 import contextlib, datetime, hashlib, json, os, re, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 from .probe import inspect, command
+from .processes import run_group, timeout_budget
 from .localtools import node_bin, python_bin, install_node, install_python
 from exelia.security import redact
 
@@ -336,14 +337,16 @@ def baseline_commit(root: Path) -> dict:
         return {'status':'blocked','reason':'Git user.name or user.email missing; configure locally'}
     # Existing git-checkpoint.sh checks for secrets, file sizes and quality gate.
     try:
-        r=subprocess.run(['bash','scripts/git-checkpoint.sh','--starter',
-             'chore: initialize Exelia Ultimate Starter v2','--initial'],cwd=root,
-             capture_output=True,text=True,timeout=120,check=False)
+        budget = timeout_budget('EXELIA_CHECKPOINT_TIMEOUT', 900)
+        r=run_group(['bash','scripts/git-checkpoint.sh','--starter',
+             'chore: initialize Exelia Ultimate Starter v2','--initial'],cwd=root,timeout=budget)
         return {'status':'passed' if r.returncode==0 else 'failed',
                 'reason':'QA-gated local commit created' if r.returncode==0
                  else (r.stdout+'\n'+r.stderr)[-3500:]}
     except subprocess.TimeoutExpired:
-        return {'status':'failed','reason':'Git baseline checkpoint timed out'}
+        return {'status':'failed','reason':f'Git baseline checkpoint timed out after {budget}s; process group terminated; resume to retry'}
+    except ValueError as error:
+        return {'status':'failed','reason':str(error)}
 
 
 def validate_post_install(root: Path, manifest: dict, findings: dict) -> list[dict]:
